@@ -59,3 +59,28 @@ Uses Next.js ESLint presets:
 - `eslint-config-next/typescript`
 
 Build artifacts (`.next/`, `out/`, `build/`) are ignored.
+
+## Workflow
+
+### Branch Naming Conventions
+
+Use the following prefixes for branch names:
+- `feature/*` - New features or enhancements
+- `fix/*` - Bug fixes
+- `hotfix/*` - Urgent production fixes
+- `release/*` - Release preparation branches
+
+### Deployment Process
+
+- **Platform**: Vercel
+- **Production**: `main` branch auto-deploys to production
+- **Process**: Push to `main` triggers automatic deployment
+- Changes are immediately visible on the live website after successful deployment
+
+### Development Workflow
+
+1. Create a feature/fix branch from `main`
+2. Make changes and test locally with `npm run dev`
+3. Run `npm run lint` to check for linting issues
+4. Push branch and create pull request to `main`
+5. Once merged, changes auto-deploy to production via Vercel
