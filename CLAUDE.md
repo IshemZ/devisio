@@ -301,12 +301,12 @@ Use the following prefixes for branch names:
   - `devisio-staging` → Staging database (develop branch)
 - Connection strings configured via Vercel environment variables per branch
 
-**ORM**: Prisma v7
+**ORM**: Prisma v6
 
 - Type-safe database queries with full TypeScript support
 - Schema defined in `prisma/schema.prisma`
-- **Prisma 7 Change**: `datasource` no longer includes `url` or `directUrl` in schema file
-- Connection URLs passed via environment variables to PrismaClient constructor
+- **Currently using Prisma 6.19.0** for stability (see Known Issues for Prisma 7 problems)
+- `datasource` includes `url` and `directUrl` in schema file (Prisma 6 format)
 - Migrations managed via Prisma CLI (`npx prisma migrate dev`)
 - Auto-generated types from database schema (`npx prisma generate`)
 
