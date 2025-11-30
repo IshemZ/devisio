@@ -393,33 +393,34 @@ devisio/
 ├── app/                      # Next.js App Router
 │   ├── (auth)/              # ✅ Route group for authentication
 │   │   ├── login/           # ✅ Login page with email/password + Google OAuth
-│   │   │   └── page.tsx     # French language login form
+│   │   │   └── page.tsx     # ✅ French language login form
 │   │   └── register/        # ✅ Registration page with form validation
-│   │       └── page.tsx     # French language registration form
+│   │       └── page.tsx     # ✅ French language registration form
 │   ├── (dashboard)/         # ✅ Protected route group for authenticated users
-│   │   ├── layout.tsx       # ✅ Dashboard layout with auth protection
+│   │   ├── layout.tsx       # ✅ Dashboard layout with auth protection & redirect
 │   │   └── dashboard/       # ✅ Main dashboard page
-│   │       └── page.tsx     # Welcome page, stats, quick actions
+│   │       └── page.tsx     # ✅ Welcome page, stats cards, quick actions, getting started guide
 │   ├── api/                 # API Routes
 │   │   └── auth/            # ✅ NextAuth endpoints
 │   │       ├── [...nextauth]/ # ✅ NextAuth route handler (signin, signout, callback, session)
 │   │       │   └── route.ts   # Imports authOptions from lib/auth.ts
-│   │       └── register/    # ✅ User registration API
-│   │           └── route.ts   # POST - creates new user with hashed password
-│   ├── actions/             # Server Actions (CRUD operations)
-│   ├── layout.tsx           # Root layout with fonts and metadata
+│   │       └── register/    # ✅ User registration API (POST)
+│   │           └── route.ts   # ✅ Creates new user with bcryptjs, all errors in French
+│   ├── actions/             # Server Actions (CRUD operations - future)
+│   ├── layout.tsx           # ✅ Root layout (Devisio branding, lang="fr", fonts)
 │   ├── page.tsx             # ✅ Homepage (professional landing page in French)
-│   └── globals.css          # Global styles + Tailwind
+│   └── globals.css          # ✅ Global styles (Tailwind v4 + CSS variables)
 │
 ├── components/              # React components
 │   ├── auth/                # ✅ Authentication components
-│   │   ├── LoginForm.tsx    # Client component for login
-│   │   └── RegisterForm.tsx # Client component for registration
-│   ├── ui/                  # Base UI components (buttons, inputs, etc.)
-│   ├── quotes/              # Quote-specific components
-│   ├── clients/             # Client management components
-│   ├── services/            # Service catalog components
-│   └── layout/              # Layout components (header, sidebar, footer)
+│   │   ├── LoginForm.tsx    # ✅ Client component for login (French)
+│   │   └── RegisterForm.tsx # ✅ Client component for registration (French)
+│   ├── SignOutButton.tsx    # ✅ Client component using NextAuth signOut (French)
+│   ├── ui/                  # Base UI components (future)
+│   ├── quotes/              # Quote-specific components (future)
+│   ├── clients/             # Client management components (future)
+│   ├── services/            # Service catalog components (future)
+│   └── layout/              # Layout components (future)
 │
 ├── lib/                     # Shared utilities and configurations
 │   ├── utils.ts            # ✅ Utility functions (cn for Tailwind classes)
@@ -427,7 +428,7 @@ devisio/
 │   └── auth.ts             # ✅ NextAuth configuration (Credentials + Google)
 │
 ├── prisma/                  # Database
-│   ├── schema.prisma       # ✅ Database schema (Prisma 6 format)
+│   ├── schema.prisma       # ✅ Database schema (Prisma 6 format, User + Business models)
 │   └── migrations/         # ✅ Migration files (initial migration applied)
 │
 ├── types/                   # TypeScript type definitions
@@ -438,7 +439,7 @@ devisio/
 ├── .env.local              # ✅ Local environment variables (git-ignored)
 ├── .env                    # ✅ For Prisma CLI (DATABASE_URL, DIRECT_URL)
 ├── .env.example            # Environment variables template
-└── CLAUDE.md              # This file - project documentation
+└── CLAUDE.md              # ✅ This file - comprehensive project documentation
 ```
 
 **Status Legend:**
@@ -653,7 +654,7 @@ cat .env.local | grep -E "^(DATABASE_URL|DIRECT_URL)=" > .env
 ## UX Review & Recommendations
 
 **Last Review Date**: 2025-11-30
-**Overall UX Score**: 6.5/10
+**Overall UX Score**: 7.5/10 *(improved from 6.5)*
 
 This section documents UX issues identified during development and prioritized recommendations for improvement. It serves as a roadmap for UX enhancements.
 
@@ -662,44 +663,56 @@ This section documents UX issues identified during development and prioritized r
 | Category | Score | Notes |
 |----------|-------|-------|
 | **Visual Design** | 7.5/10 | Clean, professional, good color palette |
-| **Navigation** | 5/10 | Missing dashboard route, no mobile menu |
-| **User Feedback** | 4/10 | Critical: No success messages or confirmations |
-| **Accessibility** | 5.5/10 | Missing focus states, ARIA labels |
-| **Language Consistency** | 3/10 | **Critical**: Mixed French/English |
-| **Forms & Authentication** | 6/10 | Missing password visibility toggle, forgot password |
+| **Navigation** | 7/10 | ✅ Dashboard route created, no mobile menu |
+| **User Feedback** | 5/10 | Loading states added, needs toast notifications |
+| **Accessibility** | 6/10 | Missing some focus states, ARIA labels |
+| **Language Consistency** | 10/10 | ✅ **Fixed**: All pages in French |
+| **Forms & Authentication** | 7/10 | ✅ Proper signout, missing password visibility toggle |
 | **Responsiveness** | 7/10 | Good mobile design, needs mobile nav |
-| **Error Handling** | 5/10 | Basic errors present, needs improvement |
+| **Error Handling** | 6/10 | French error messages, needs improvement |
 
-### Critical Issues (Fix Immediately)
+### Critical Issues - COMPLETED ✅
 
-These issues block core user flows or create confusion:
+These critical issues have been resolved:
 
-1. **Language Inconsistency** ⚠️
-   - **Problem**: Homepage in French, auth pages in English
-   - **Impact**: Confusing, unprofessional
-   - **Fix**: Uniformize to French across all pages
-   - **Files affected**:
+1. ✅ **Language Inconsistency** - FIXED
+   - **Was**: Homepage in French, auth pages in English
+   - **Fixed**: All pages uniformized to French (login, register, dashboard, API errors)
+   - **Commit**: "Uniformize language to French across all auth pages"
+   - **Files fixed**:
      - [app/(auth)/login/page.tsx](app/(auth)/login/page.tsx)
      - [app/(auth)/register/page.tsx](app/(auth)/register/page.tsx)
      - [components/auth/LoginForm.tsx](components/auth/LoginForm.tsx)
      - [components/auth/RegisterForm.tsx](components/auth/RegisterForm.tsx)
+     - [app/api/auth/register/route.ts](app/api/auth/register/route.ts)
 
-2. **Missing Dashboard Route** ⚠️
-   - **Problem**: 404 error after successful login/registration
-   - **Impact**: Breaks core user flow, creates bad first impression
-   - **Fix**: Create `app/(dashboard)/dashboard/page.tsx` with basic layout
-   - **Temporary solution**: Add simple welcome page with user info
+2. ✅ **Missing Dashboard Route** - FIXED
+   - **Was**: 404 error after successful login/registration
+   - **Fixed**: Created complete dashboard with welcome message, stats cards, quick actions, getting started guide
+   - **File created**: [app/(dashboard)/dashboard/page.tsx](app/(dashboard)/dashboard/page.tsx)
 
-3. **No User Feedback** ⚠️
-   - **Problem**: No success messages, loading states, or confirmations
+3. ✅ **Improper Sign Out Implementation** - FIXED
+   - **Was**: Anchor tag with href="/api/auth/signout" (no CSRF protection)
+   - **Fixed**: Created SignOutButton client component using NextAuth's signOut()
+   - **File created**: [components/SignOutButton.tsx](components/SignOutButton.tsx)
+   - **Security**: Proper CSRF protection, redirects to homepage
+
+4. ✅ **Root Layout Metadata** - FIXED
+   - **Was**: Default "Create Next App" metadata, HTML lang="en"
+   - **Fixed**: Proper Devisio branding, HTML lang="fr" for accessibility
+   - **File fixed**: [app/layout.tsx](app/layout.tsx)
+
+### Remaining Critical Issues
+
+5. **No User Feedback** ⚠️
+   - **Problem**: No success messages or confirmations
    - **Impact**: Users don't know if actions succeeded
    - **Fix**:
      - Add toast notifications library (react-hot-toast or sonner)
      - Show "Registration successful!" message
-     - Add loading spinners during auth
      - Add success feedback after form submissions
 
-4. **Generic Error Messages** ⚠️
+6. **Generic Error Messages** ⚠️
    - **Problem**: "Invalid email or password" doesn't help debug
    - **Impact**: Poor user experience, support burden
    - **Fix**:
@@ -767,18 +780,25 @@ These polish the experience but can wait:
 
 ### Prioritized Implementation Roadmap
 
-#### **Phase 1: Critical Fixes (URGENT)**
-Complete before any user testing or launch:
+#### **Phase 1: Critical Fixes** - PARTIALLY COMPLETED ✅
 
-1. Uniformize language to French (all auth pages)
-2. Create `/dashboard` route with basic layout
-3. Add toast notification system
-4. Implement proper success/error feedback
-5. Improve error messages with specific guidance
-6. Add loading states to all forms
+**Completed**:
 
-**Estimated effort**: 1-2 days
-**Impact**: Fixes broken user flows, makes app usable
+1. ✅ Uniformize language to French (all auth pages)
+2. ✅ Create `/dashboard` route with basic layout
+3. ✅ Fix root layout metadata and HTML lang attribute
+4. ✅ Implement proper SignOut with NextAuth
+5. ✅ Add loading states to auth forms
+
+**Remaining**:
+
+1. ⏳ Add toast notification system
+2. ⏳ Implement success/error feedback messages
+3. ⏳ Improve error messages with specific guidance
+
+**Estimated effort for remaining**: 0.5-1 day
+
+**Impact**: Core user flows functional, app is usable for testing
 
 #### **Phase 2: Important UX (Before Beta)**
 Complete before inviting real users:
