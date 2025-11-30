@@ -372,6 +372,133 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
+## Development Best Practices
+
+Follow these modern SaaS development practices when working on Devisio:
+
+### Code Quality
+
+- **TypeScript Strict Mode**: Always maintain strict type checking
+- **ESLint**: Fix linting issues before committing (`npm run lint`)
+- **Code Reviews**: Use PRs for all changes, even solo development
+- **Small Commits**: Make atomic commits with clear, descriptive messages
+- **No Console Logs**: Remove `console.log` in production code (use proper logging)
+
+### Architecture Patterns
+
+- **Server-First**: Prefer Server Components over Client Components
+  - Only use `"use client"` when absolutely necessary (interactivity, browser APIs)
+  - Keep business logic on the server for security and performance
+- **Server Actions**: Use Server Actions for mutations instead of API routes
+  - Automatic revalidation and optimistic updates
+  - Type-safe data mutations
+- **Colocation**: Keep related files close (component + styles + tests in same folder)
+- **Composition over Inheritance**: Build small, reusable components
+
+### Security Best Practices
+
+- **Environment Variables**: Never commit secrets (use `.env.local`, not `.env`)
+- **Input Validation**: Always validate user input with Zod schemas
+- **SQL Injection**: Use Prisma parameterized queries (never raw SQL with user input)
+- **XSS Protection**: React escapes by default, but be careful with `dangerouslySetInnerHTML`
+- **CSRF Protection**: NextAuth handles CSRF tokens automatically
+- **Rate Limiting**: Implement rate limiting on API routes and Server Actions
+- **Authentication**: Always check user session on sensitive operations
+
+### Performance Optimization
+
+- **Image Optimization**: Use Next.js `<Image>` component for all images
+- **Font Optimization**: Already using `next/font` for Geist fonts
+- **Code Splitting**: Use dynamic imports for heavy components
+- **Database Queries**:
+  - Use Prisma's `select` to fetch only needed fields
+  - Implement pagination for large datasets
+  - Use database indexes on frequently queried fields
+- **Caching**: Leverage Next.js caching strategies
+  - Static pages where possible
+  - ISR (Incremental Static Regeneration) for semi-dynamic content
+  - Client-side caching for user data
+
+### Database Best Practices
+
+- **Migrations**: Always use Prisma migrations (never edit database directly)
+- **Relations**: Define relationships in Prisma schema for type safety
+- **Soft Deletes**: Consider soft deletes for important data (quotes, clients)
+- **Timestamps**: Include `createdAt` and `updatedAt` on all models
+- **Unique Constraints**: Use database constraints for data integrity
+- **Transactions**: Use Prisma transactions for multi-step operations
+
+### State Management
+
+- **Server State**: Fetch data on the server when possible
+- **URL State**: Use URL params for shareable state (filters, pagination)
+- **Form State**: Use React Hook Form or similar for complex forms
+- **Global State**: Minimize global state, prefer prop drilling or context for small apps
+- **Optimistic Updates**: Use Server Actions with optimistic UI for better UX
+
+### Testing Strategy
+
+- **Unit Tests**: Test utility functions and business logic
+- **Integration Tests**: Test Server Actions and API routes
+- **E2E Tests**: Test critical user flows (quote creation, client management)
+- **Type Safety**: Let TypeScript catch errors at compile time
+- **Manual Testing**: Always test on staging before production
+
+### Deployment & CI/CD
+
+- **Branch Protection**: Main branch should be protected
+- **Preview Deployments**: Test all features on Vercel preview URLs
+- **Environment Parity**: Keep staging and production environments similar
+- **Database Migrations**: Run migrations before deploying new code
+- **Rollback Plan**: Keep previous deployment accessible for quick rollback
+- **Monitoring**: Set up error tracking (Sentry) and analytics
+
+### Accessibility (a11y)
+
+- **Semantic HTML**: Use proper HTML elements (`<button>`, `<nav>`, etc.)
+- **ARIA Labels**: Add labels for screen readers where needed
+- **Keyboard Navigation**: Ensure all interactive elements are keyboard-accessible
+- **Color Contrast**: Maintain WCAG AA contrast ratios
+- **Focus Indicators**: Never remove focus outlines without replacing them
+
+### Code Organization Tips
+
+- **Barrel Exports**: Use index.ts for clean imports
+  ```typescript
+  // components/ui/index.ts
+  export { Button } from './Button'
+  export { Input } from './Input'
+  ```
+- **Absolute Imports**: Use `@/` alias for cleaner imports
+- **Shared Types**: Define shared types in a central location
+- **Constants**: Extract magic numbers/strings to constants
+- **Error Handling**: Use try-catch with meaningful error messages
+
+### SaaS-Specific Patterns
+
+- **Multi-Tenancy**: Each business has isolated data (enforced by Prisma queries)
+- **Feature Flags**: Consider feature flags for gradual rollouts
+- **Audit Logs**: Track important actions (quote sent, client deleted)
+- **User Feedback**: Implement feedback mechanism for user suggestions
+- **Onboarding**: Create smooth onboarding flow for new users
+- **Data Export**: Allow users to export their data (GDPR compliance)
+
+### Dependencies Management
+
+- **Keep Updated**: Regularly update dependencies (`npm outdated`)
+- **Security Audits**: Run `npm audit` regularly
+- **Bundle Size**: Monitor bundle size (use `@next/bundle-analyzer`)
+- **Tree Shaking**: Import only what you need from libraries
+- **Peer Dependencies**: Check compatibility before adding new packages
+
+### Documentation
+
+- **Code Comments**: Comment "why", not "what"
+- **JSDoc**: Use JSDoc for public API functions
+- **README**: Keep README updated with setup instructions
+- **CLAUDE.md**: Update this file when making architectural decisions
+- **Inline TODOs**: Use `// TODO:` for technical debt (track in issues)
+
 ## Known Issues & Gotchas
 
 [TODO: Document any known issues, workarounds, or things to watch out for]
