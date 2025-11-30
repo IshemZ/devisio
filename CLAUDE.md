@@ -312,12 +312,45 @@ Use the following prefixes for branch names:
 
 ### File Organization
 
-[TODO: Document file/folder organization patterns as they emerge]
+**Current Project Structure:**
 
-- Components: Where shared components live
-- Utilities: Helper functions location
-- Types: TypeScript type definitions
-- Constants: Application constants
+```
+devisio/
+├── app/                      # Next.js App Router
+│   ├── actions/             # Server Actions (CRUD operations)
+│   ├── layout.tsx           # Root layout with fonts
+│   ├── page.tsx             # Homepage
+│   └── globals.css          # Global styles + Tailwind
+│
+├── components/              # React components
+│   ├── ui/                  # Base UI components (buttons, inputs, etc.)
+│   ├── quotes/              # Quote-specific components
+│   ├── clients/             # Client management components
+│   ├── services/            # Service catalog components
+│   └── layout/              # Layout components (header, sidebar, footer)
+│
+├── lib/                     # Shared utilities and configurations
+│   ├── utils.ts            # Utility functions (cn for Tailwind classes)
+│   ├── prisma.ts           # [TODO] Prisma client singleton
+│   └── auth.ts             # [TODO] NextAuth configuration
+│
+├── prisma/                  # Database
+│   ├── schema.prisma       # [TODO] Database schema
+│   └── migrations/         # [TODO] Migration files
+│
+├── public/                  # Static assets
+│
+├── .env.example            # Environment variables template
+└── CLAUDE.md              # This file - project documentation
+```
+
+**File Naming Conventions:**
+
+- Server Actions: `app/actions/{entity}.ts` (e.g., `quotes.ts`, `clients.ts`)
+- Components: PascalCase (e.g., `QuoteCard.tsx`, `ClientList.tsx`)
+- Utilities: camelCase (e.g., `utils.ts`, `formatters.ts`)
+- Types: `types.ts` or inline with components
+- Constants: `constants.ts` with UPPER_CASE exports
 
 ## Environment Variables
 
