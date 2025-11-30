@@ -288,16 +288,27 @@ Use the following prefixes for branch names:
 **Database**: Supabase (hosted PostgreSQL)
 
 - PostgreSQL database hosted on Supabase
+- **Current Setup**: Single Supabase project (`devisio-saas`) used for both development and production
+- **Future Recommendation**: Create separate `devisio-production` project before launch for data isolation
 - Supabase provides built-in auth, but we're using NextAuth instead for more flexibility
 - Real-time capabilities available (optional for future features)
 - Supabase dashboard for database management
 
-**ORM**: Prisma
+**Supabase Environment Strategy**:
+- **Development Phase**: One project (`devisio-saas`) shared between `main` and `develop` branches
+- **Production Phase**: Two projects recommended:
+  - `devisio-production` → Production database (main branch)
+  - `devisio-staging` → Staging database (develop branch)
+- Connection strings configured via Vercel environment variables per branch
+
+**ORM**: Prisma v7
 
 - Type-safe database queries with full TypeScript support
 - Schema defined in `prisma/schema.prisma`
-- Migrations managed via Prisma CLI
-- Auto-generated types from database schema
+- **Prisma 7 Change**: `datasource` no longer includes `url` or `directUrl` in schema file
+- Connection URLs passed via environment variables to PrismaClient constructor
+- Migrations managed via Prisma CLI (`npx prisma migrate dev`)
+- Auto-generated types from database schema (`npx prisma generate`)
 
 **API Structure**:
 
@@ -333,12 +344,12 @@ devisio/
 │
 ├── lib/                     # Shared utilities and configurations
 │   ├── utils.ts            # Utility functions (cn for Tailwind classes)
-│   ├── prisma.ts           # [TODO] Prisma client singleton
-│   └── auth.ts             # [TODO] NextAuth configuration
+│   ├── prisma.ts           # ✅ Prisma client singleton
+│   └── auth.ts             # ✅ NextAuth configuration
 │
 ├── prisma/                  # Database
-│   ├── schema.prisma       # [TODO] Database schema
-│   └── migrations/         # [TODO] Migration files
+│   ├── schema.prisma       # ✅ Database schema (Prisma 7 format)
+│   └── migrations/         # Migration files (created after first migrate)
 │
 ├── public/                  # Static assets
 │
@@ -367,8 +378,10 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
 # Supabase Database
-DATABASE_URL=  # PostgreSQL connection string from Supabase
-DIRECT_URL=    # Direct connection URL (for Prisma migrations)
+# Get these from Supabase Dashboard → Project Settings → Database
+# Connection string section with two modes:
+DATABASE_URL=   # Transaction mode (port 6543) - for app queries with connection pooling
+DIRECT_URL=     # Session mode (port 5432) - for Prisma migrations (direct connection)
 
 # Supabase (Optional - if using Supabase features beyond database)
 NEXT_PUBLIC_SUPABASE_URL=
@@ -567,9 +580,14 @@ This checklist guides the initial project setup. Check off items as they are com
 ### 3. Database Setup (Supabase + Prisma)
 
 - [ ] Create Supabase project at https://supabase.com
-  - [ ] Note down Project URL
-  - [ ] Note down Database password
-  - [ ] Get connection strings (pooling + direct)
+  - [ ] Project name: `devisio-saas` (or your preferred name)
+  - [ ] Choose region closest to your users
+  - [ ] Set and save database password securely
+  - [ ] Go to **Project Settings** → **Database**
+  - [ ] Copy **Connection string** in **URI** format:
+    - **Transaction mode** (port 6543) → `DATABASE_URL`
+    - **Session mode** (port 5432) → `DIRECT_URL`
+  - [ ] Replace `[YOUR-PASSWORD]` with your actual database password in both URLs
 - [ ] Initialize Prisma
   ```bash
   npx prisma init
