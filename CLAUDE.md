@@ -522,7 +522,45 @@ Follow these modern SaaS development practices when working on Devisio:
 
 ## Known Issues & Gotchas
 
-[TODO: Document any known issues, workarounds, or things to watch out for]
+### Prisma Version Compatibility
+
+**Issue**: Prisma 7 introduced breaking changes to datasource configuration that cause migration failures.
+
+**Symptoms**:
+- `Error: The datasource property 'url' is no longer supported in schema files`
+- Migration commands fail with config file errors
+- `prisma.config.ts` or `prisma.config.js` parsing errors
+
+**Solution**: Use Prisma 6 instead of Prisma 7
+```bash
+npm install prisma@6 @prisma/client@6
+```
+
+**Current Setup**:
+- Using **Prisma 6.19.0** for stability
+- Schema file includes `url` and `directUrl` in datasource block (Prisma 6 format)
+- Prisma CLI reads from `.env` file (not `.env.local`)
+- Migrations work reliably with this version
+
+**Workaround for .env.local**:
+Prisma CLI only reads `.env` files by default. To use variables from `.env.local`:
+```bash
+# Copy database URLs from .env.local to .env
+cat .env.local | grep -E "^(DATABASE_URL|DIRECT_URL)=" > .env
+```
+
+**When to revisit**: Monitor Prisma 7 stable releases and migration documentation updates.
+
+### Environment Variables for Prisma
+
+**Issue**: Next.js loads `.env.local` but Prisma CLI only loads `.env`
+
+**Workaround**:
+- Keep a `.env` file with `DATABASE_URL` and `DIRECT_URL` for Prisma CLI
+- Keep `.env.local` for Next.js app runtime (includes all secrets)
+- Both files are git-ignored for security
+
+**Note**: This is expected behavior, not a bug. The two tools have different env loading strategies.
 
 ## Future Plans
 
