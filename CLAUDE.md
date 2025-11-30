@@ -346,3 +346,146 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ## Future Plans
 
 [TODO: Track planned features or refactoring]
+
+## Initial Setup Checklist
+
+This checklist guides the initial project setup. Check off items as they are completed.
+
+### 1. Project Structure
+
+- [ ] Create `lib/` directory for shared utilities
+  - [ ] `lib/prisma.ts` - Prisma client singleton
+  - [ ] `lib/auth.ts` - NextAuth configuration
+  - [ ] `lib/utils.ts` - Utility functions (cn, formatters, etc.)
+- [ ] Create `components/` directory structure
+  - [ ] `components/ui/` - Base UI components
+  - [ ] `components/quotes/` - Quote-specific components
+  - [ ] `components/clients/` - Client management components
+  - [ ] `components/services/` - Service management components
+  - [ ] `components/layout/` - Layout components (Header, Sidebar, Footer)
+- [ ] Create `app/actions/` directory for Server Actions
+  - [ ] `app/actions/quotes.ts` - Quote CRUD operations
+  - [ ] `app/actions/clients.ts` - Client CRUD operations
+  - [ ] `app/actions/services.ts` - Service CRUD operations
+- [ ] Create route groups in `app/`
+  - [ ] `app/(auth)/` - Authentication pages
+  - [ ] `app/(dashboard)/` - Protected dashboard routes
+- [ ] Create `prisma/` directory for database schema
+
+### 2. Dependencies Installation
+
+- [ ] Install Prisma
+  ```bash
+  npm install @prisma/client
+  npm install -D prisma
+  ```
+- [ ] Install NextAuth
+  ```bash
+  npm install next-auth
+  ```
+- [ ] Install validation library
+  ```bash
+  npm install zod
+  ```
+- [ ] Install Tailwind utilities
+  ```bash
+  npm install clsx tailwind-merge
+  ```
+- [ ] Install UI components library (optional - shadcn/ui)
+  ```bash
+  npx shadcn@latest init
+  ```
+
+### 3. Database Setup (Supabase + Prisma)
+
+- [ ] Create Supabase project at https://supabase.com
+  - [ ] Note down Project URL
+  - [ ] Note down Database password
+  - [ ] Get connection strings (pooling + direct)
+- [ ] Initialize Prisma
+  ```bash
+  npx prisma init
+  ```
+- [ ] Configure Prisma schema (`prisma/schema.prisma`)
+  - [ ] Set up PostgreSQL datasource
+  - [ ] Define User model
+  - [ ] Define Business model
+  - [ ] Define Client model
+  - [ ] Define Service model
+  - [ ] Define Quote model
+  - [ ] Define QuoteItem model
+- [ ] Create initial migration
+  ```bash
+  npx prisma migrate dev --name init
+  ```
+- [ ] Generate Prisma client
+  ```bash
+  npx prisma generate
+  ```
+
+### 4. Environment Variables Setup
+
+- [ ] Create `.env.local` file (copy from `.env.example`)
+- [ ] Configure local environment variables
+  - [ ] `DATABASE_URL` - Supabase connection pooling URL
+  - [ ] `DIRECT_URL` - Supabase direct connection URL
+  - [ ] `NEXTAUTH_URL` - http://localhost:3000
+  - [ ] `NEXTAUTH_SECRET` - Generate with `openssl rand -base64 32`
+- [ ] Configure Vercel environment variables
+  - [ ] Production environment variables
+  - [ ] Preview environment variables
+
+### 5. NextAuth Configuration
+
+- [ ] Create Google OAuth credentials
+  - [ ] Go to Google Cloud Console
+  - [ ] Create OAuth 2.0 Client ID
+  - [ ] Add authorized redirect URIs
+  - [ ] Note down Client ID and Secret
+- [ ] Create NextAuth API route
+  - [ ] `app/api/auth/[...nextauth]/route.ts`
+  - [ ] Configure providers (Credentials, Google)
+  - [ ] Configure session strategy
+  - [ ] Configure callbacks
+- [ ] Create auth utilities in `lib/auth.ts`
+- [ ] Test authentication flow
+
+### 6. Initial UI Setup
+
+- [ ] Set up base layout
+  - [ ] Update `app/layout.tsx` with proper metadata
+  - [ ] Configure fonts and theme
+- [ ] Create authentication pages
+  - [ ] `app/(auth)/login/page.tsx`
+  - [ ] `app/(auth)/register/page.tsx`
+- [ ] Create dashboard layout
+  - [ ] `app/(dashboard)/layout.tsx` with navigation
+- [ ] Create placeholder dashboard pages
+  - [ ] `app/(dashboard)/quotes/page.tsx`
+  - [ ] `app/(dashboard)/clients/page.tsx`
+  - [ ] `app/(dashboard)/services/page.tsx`
+
+### 7. Testing & Verification
+
+- [ ] Test local development server
+  ```bash
+  npm run dev
+  ```
+- [ ] Verify database connection
+- [ ] Test authentication flow (login/logout)
+- [ ] Run linting
+  ```bash
+  npm run lint
+  ```
+- [ ] Build production bundle
+  ```bash
+  npm run build
+  ```
+- [ ] Deploy to Vercel and test preview URL
+
+### 8. Documentation
+
+- [ ] Update CLAUDE.md with actual file structure
+- [ ] Document any architectural decisions made
+- [ ] Update environment variables section if needed
+- [ ] Add any gotchas or important notes discovered during setup
