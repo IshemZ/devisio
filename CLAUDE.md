@@ -651,6 +651,103 @@ cat .env.local | grep -E "^(DATABASE_URL|DIRECT_URL)=" > .env
 
 **Note**: This is expected behavior, not a bug. The two tools have different env loading strategies.
 
+### Google OAuth Missing Business Record
+
+**Issue**: Users signing in with Google OAuth were redirected back to the login page instead of the dashboard after successful authentication.
+
+**Root Cause**:
+
+- NextAuth's PrismaAdapter creates the `User` record during Google OAuth signin
+- However, it doesn't automatically create the required `Business` record
+- The application schema requires a one-to-one relationship: each User must have a Business
+- When users tried to access the dashboard, the app expected a Business record but found none
+
+**Symptoms**:
+
+- Google OAuth popup appears and completes successfully
+- User is redirected back to `/login` instead of `/dashboard`
+- No error message displayed (silent failure)
+- Only affects Google OAuth users, not email/password registration (which creates both records)
+
+**Solution**: Added `signIn` callback in [lib/auth.ts](lib/auth.ts:79-98)
+
+```typescript
+async signIn({ user, account, profile }) {
+  // For Google OAuth, check if Business exists, create if not
+  if (account?.provider === 'google' && user.id) {
+    const existingBusiness = await prisma.business.findUnique({
+      where: { userId: user.id }
+    })
+
+    if (!existingBusiness) {
+      await prisma.business.create({
+        data: {
+          name: `Institut de ${user.name || 'beauté'}`,
+          userId: user.id,
+          email: user.email || undefined,
+        }
+      })
+    }
+  }
+
+  return true
+}
+```
+
+**Fix for Existing Users**: Created script [scripts/fix-missing-business.ts](scripts/fix-missing-business.ts)
+
+```bash
+# Run this to fix any existing Google OAuth users without Business records
+npx tsx scripts/fix-missing-business.ts
+```
+
+**Prevention**: All new Google OAuth sign-ins will automatically create a Business record going forward.
+
+**Date Fixed**: 2025-11-30
+
+**Files Modified**:
+
+- [lib/auth.ts](lib/auth.ts) - Added signIn callback
+- [scripts/fix-missing-business.ts](scripts/fix-missing-business.ts) - Created fix script
+
+### Supabase Connection Pooling and Prepared Statements
+
+**Issue**: When running Prisma scripts while Prisma Studio or the dev server is running, you may encounter:
+
+```text
+Error: prepared statement "s0" already exists
+```
+
+**Root Cause**:
+
+- Supabase connection pooling (port 6543) uses PgBouncer in transaction mode
+- Multiple Prisma clients connecting simultaneously can conflict with prepared statements
+- This is a known limitation of PgBouncer in transaction pooling mode
+
+**Workaround**:
+
+1. **For Scripts**: Use `DIRECT_URL` (port 5432) instead of `DATABASE_URL`:
+
+   ```typescript
+   const prisma = new PrismaClient({
+     datasources: {
+       db: {
+         url: process.env.DIRECT_URL
+       }
+     }
+   })
+   ```
+
+2. **For Prisma Studio**: Close Prisma Studio before running scripts:
+
+   ```bash
+   pkill -f "prisma studio"
+   ```
+
+3. **For Development**: This doesn't affect normal app usage (Next.js app uses connection pooling correctly)
+
+**Note**: Production apps are unaffected as they use a single Prisma client instance via the singleton pattern in [lib/prisma.ts](lib/prisma.ts).
+
 ## UX Review & Recommendations
 
 **Last Review Date**: 2025-11-30

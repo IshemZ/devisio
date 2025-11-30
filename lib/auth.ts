@@ -76,6 +76,27 @@ export const authOptions: NextAuthOptions = {
 
   // Callbacks
   callbacks: {
+    async signIn({ user, account }) {
+      // For Google OAuth, check if Business exists, create if not
+      if (account?.provider === 'google' && user.id) {
+        const existingBusiness = await prisma.business.findUnique({
+          where: { userId: user.id }
+        })
+
+        if (!existingBusiness) {
+          await prisma.business.create({
+            data: {
+              name: `Institut de ${user.name || 'beauté'}`,
+              userId: user.id,
+              email: user.email || undefined,
+            }
+          })
+        }
+      }
+
+      return true
+    },
+
     async jwt({ token, user, account }) {
       // Initial sign in
       if (user) {

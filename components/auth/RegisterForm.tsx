@@ -60,7 +60,7 @@ export default function RegisterForm() {
 
       router.push('/dashboard')
       router.refresh()
-    } catch (error) {
+    } catch {
       setError('Une erreur est survenue. Veuillez réessayer.')
       setIsLoading(false)
     }
