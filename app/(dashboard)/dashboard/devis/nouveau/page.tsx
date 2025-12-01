@@ -1,59 +1,57 @@
-import { Metadata } from 'next'
-import { getClients } from '@/app/actions/clients'
-import { getServices } from '@/app/actions/services'
-import QuoteForm from '@/components/QuoteForm'
-import { redirect } from 'next/navigation'
+import { Metadata } from "next";
+import { getClients } from "@/app/actions/clients";
+import { getServices } from "@/app/actions/services";
+import { QuoteFormNew } from "@/components/forms";
+import { EmptyState } from "@/components/ui/empty-state";
+import { redirect } from "next/navigation";
+import { Users, Briefcase } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: 'Nouveau devis | Devisio',
-  description: 'Créer un nouveau devis',
-}
+  title: "Nouveau devis | Devisio",
+  description: "Créer un nouveau devis",
+};
 
 export default async function NewQuotePage() {
   const [clientsResult, servicesResult] = await Promise.all([
     getClients(),
     getServices(),
-  ])
+  ]);
 
   if (clientsResult.error || servicesResult.error) {
-    redirect('/dashboard')
+    redirect("/dashboard");
   }
 
-  const clients = clientsResult.data || []
-  const services = servicesResult.data || []
+  const clients = clientsResult.data || [];
+  const services = servicesResult.data || [];
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto max-w-5xl py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground">Nouveau devis</h1>
-        <p className="mt-2 text-foreground/60">
+        <h1 className="text-3xl font-bold tracking-tight">Nouveau devis</h1>
+        <p className="mt-2 text-muted-foreground">
           Créez un devis professionnel pour votre client
         </p>
       </div>
 
       {clients.length === 0 ? (
-        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-12 text-center">
-          <p className="text-foreground/60">Vous devez d'abord créer un client</p>
-          <a
-            href="/dashboard/clients"
-            className="mt-4 inline-block rounded-md bg-foreground px-6 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
-          >
-            Aller aux clients
-          </a>
-        </div>
+        <EmptyState
+          icon={Users}
+          title="Aucun client"
+          description="Vous devez créer au moins un client avant de pouvoir générer un devis."
+          actionLabel="Créer un client"
+          actionHref="/dashboard/clients/nouveau"
+        />
       ) : services.length === 0 ? (
-        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-12 text-center">
-          <p className="text-foreground/60">Vous devez d'abord créer des services</p>
-          <a
-            href="/dashboard/services"
-            className="mt-4 inline-block rounded-md bg-foreground px-6 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
-          >
-            Aller aux services
-          </a>
-        </div>
+        <EmptyState
+          icon={Briefcase}
+          title="Aucun service"
+          description="Vous devez créer au moins un service avant de pouvoir générer un devis."
+          actionLabel="Créer un service"
+          actionHref="/dashboard/services/nouveau"
+        />
       ) : (
-        <QuoteForm clients={clients} services={services} />
+        <QuoteFormNew clients={clients} services={services} />
       )}
     </div>
-  )
+  );
 }

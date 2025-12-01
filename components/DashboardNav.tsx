@@ -1,27 +1,33 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import SignOutButton from './SignOutButton'
-import MobileNav from './MobileNav'
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import SignOutButton from "./SignOutButton";
+import MobileNav from "./MobileNav";
 
 interface DashboardNavProps {
-  userName?: string | null
-  userEmail?: string | null
+  userName?: string | null;
+  userEmail?: string | null;
 }
 
-export default function DashboardNav({ userName, userEmail }: DashboardNavProps) {
-  const pathname = usePathname()
+export default function DashboardNav({
+  userName,
+  userEmail,
+}: DashboardNavProps) {
+  const pathname = usePathname();
 
   return (
     <header className="border-b border-foreground/10 bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-8">
-            <Link href="/dashboard">
+            <Link href="/dashboard" aria-label="Retour au tableau de bord">
               <h1 className="text-2xl font-bold text-foreground">Devisio</h1>
             </Link>
-            <nav className="hidden md:flex items-center gap-6">
+            <nav
+              className="hidden md:flex items-center gap-6"
+              aria-label="Navigation principale"
+            >
               <Link
                 href="/dashboard/devis/nouveau"
                 className="inline-flex items-center gap-2 rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
@@ -31,6 +37,7 @@ export default function DashboardNav({ userName, userEmail }: DashboardNavProps)
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -44,9 +51,12 @@ export default function DashboardNav({ userName, userEmail }: DashboardNavProps)
               <Link
                 href="/dashboard/clients"
                 className={
-                  pathname === '/dashboard/clients'
-                    ? 'text-sm font-semibold text-foreground transition-colors border-b-2 border-foreground pb-1'
-                    : 'text-sm font-medium text-foreground/60 transition-colors hover:text-foreground'
+                  pathname === "/dashboard/clients"
+                    ? "text-sm font-semibold text-foreground transition-colors border-b-2 border-foreground pb-1"
+                    : "text-sm font-medium text-foreground/60 transition-colors hover:text-foreground"
+                }
+                aria-current={
+                  pathname === "/dashboard/clients" ? "page" : undefined
                 }
               >
                 Clients
@@ -54,9 +64,12 @@ export default function DashboardNav({ userName, userEmail }: DashboardNavProps)
               <Link
                 href="/dashboard/services"
                 className={
-                  pathname === '/dashboard/services'
-                    ? 'text-sm font-semibold text-foreground transition-colors border-b-2 border-foreground pb-1'
-                    : 'text-sm font-medium text-foreground/60 transition-colors hover:text-foreground'
+                  pathname === "/dashboard/services"
+                    ? "text-sm font-semibold text-foreground transition-colors border-b-2 border-foreground pb-1"
+                    : "text-sm font-medium text-foreground/60 transition-colors hover:text-foreground"
+                }
+                aria-current={
+                  pathname === "/dashboard/services" ? "page" : undefined
                 }
               >
                 Services
@@ -64,9 +77,16 @@ export default function DashboardNav({ userName, userEmail }: DashboardNavProps)
               <Link
                 href="/dashboard/devis"
                 className={
-                  pathname === '/dashboard/devis' || pathname.startsWith('/dashboard/devis/')
-                    ? 'text-sm font-semibold text-foreground transition-colors border-b-2 border-foreground pb-1'
-                    : 'text-sm font-medium text-foreground/60 transition-colors hover:text-foreground'
+                  pathname === "/dashboard/devis" ||
+                  pathname.startsWith("/dashboard/devis/")
+                    ? "text-sm font-semibold text-foreground transition-colors border-b-2 border-foreground pb-1"
+                    : "text-sm font-medium text-foreground/60 transition-colors hover:text-foreground"
+                }
+                aria-current={
+                  pathname === "/dashboard/devis" ||
+                  pathname.startsWith("/dashboard/devis/")
+                    ? "page"
+                    : undefined
                 }
               >
                 Mes devis
@@ -74,9 +94,12 @@ export default function DashboardNav({ userName, userEmail }: DashboardNavProps)
               <Link
                 href="/dashboard/parametres"
                 className={
-                  pathname === '/dashboard/parametres'
-                    ? 'text-sm font-semibold text-foreground transition-colors border-b-2 border-foreground pb-1'
-                    : 'text-sm font-medium text-foreground/60 transition-colors hover:text-foreground'
+                  pathname === "/dashboard/parametres"
+                    ? "text-sm font-semibold text-foreground transition-colors border-b-2 border-foreground pb-1"
+                    : "text-sm font-medium text-foreground/60 transition-colors hover:text-foreground"
+                }
+                aria-current={
+                  pathname === "/dashboard/parametres" ? "page" : undefined
                 }
               >
                 Paramètres
@@ -84,7 +107,10 @@ export default function DashboardNav({ userName, userEmail }: DashboardNavProps)
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            <span className="hidden sm:inline text-sm text-foreground/60">
+            <span
+              className="hidden sm:inline text-sm text-foreground/60"
+              aria-label={`Connecté en tant que ${userName || userEmail}`}
+            >
               {userName || userEmail}
             </span>
             <div className="hidden md:block">
@@ -95,5 +121,5 @@ export default function DashboardNav({ userName, userEmail }: DashboardNavProps)
         </div>
       </div>
     </header>
-  )
+  );
 }

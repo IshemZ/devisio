@@ -1,58 +1,60 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { toast } from 'sonner'
-import { deleteQuote } from '@/app/actions/quotes'
-import type { Quote, Client, QuoteItem, Service } from '@prisma/client'
-import ConfirmDialog from './ConfirmDialog'
+import { useState } from "react";
+import Link from "next/link";
+import { toast } from "sonner";
+import { deleteQuote } from "@/app/actions/quotes";
+import type { Quote, Client, QuoteItem, Service } from "@prisma/client";
+import ConfirmDialog from "./ConfirmDialog";
+import { EmptyState } from "./ui/empty-state";
+import { FileText } from "lucide-react";
 
 interface QuoteWithRelations extends Quote {
-  client: Client
-  items: (QuoteItem & { service: Service | null })[]
+  client: Client;
+  items: (QuoteItem & { service: Service | null })[];
 }
 
 interface QuotesListProps {
-  initialQuotes: QuoteWithRelations[]
+  initialQuotes: QuoteWithRelations[];
 }
 
 const statusLabels: Record<string, string> = {
-  DRAFT: 'Brouillon',
-  SENT: 'Envoyé',
-  ACCEPTED: 'Accepté',
-  REJECTED: 'Refusé',
-  EXPIRED: 'Expiré',
-}
+  DRAFT: "Brouillon",
+  SENT: "Envoyé",
+  ACCEPTED: "Accepté",
+  REJECTED: "Refusé",
+  EXPIRED: "Expiré",
+};
 
 const statusColors: Record<string, string> = {
-  DRAFT: 'bg-gray-100 text-gray-800',
-  SENT: 'bg-blue-100 text-blue-800',
-  ACCEPTED: 'bg-green-100 text-green-800',
-  REJECTED: 'bg-red-100 text-red-800',
-  EXPIRED: 'bg-orange-100 text-orange-800',
-}
+  DRAFT: "bg-gray-100 text-gray-800",
+  SENT: "bg-blue-100 text-blue-800",
+  ACCEPTED: "bg-green-100 text-green-800",
+  REJECTED: "bg-red-100 text-red-800",
+  EXPIRED: "bg-orange-100 text-orange-800",
+};
 
 export default function QuotesList({ initialQuotes }: QuotesListProps) {
-  const [quotes, setQuotes] = useState(initialQuotes)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [quoteToDelete, setQuoteToDelete] = useState<string | null>(null)
+  const [quotes, setQuotes] = useState(initialQuotes);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [quoteToDelete, setQuoteToDelete] = useState<string | null>(null);
 
   function openDeleteDialog(id: string) {
-    setQuoteToDelete(id)
-    setDeleteDialogOpen(true)
+    setQuoteToDelete(id);
+    setDeleteDialogOpen(true);
   }
 
   async function confirmDelete() {
-    if (!quoteToDelete) return
+    if (!quoteToDelete) return;
 
-    const result = await deleteQuote(quoteToDelete)
+    const result = await deleteQuote(quoteToDelete);
     if (result.success) {
-      setQuotes(quotes.filter((q) => q.id !== quoteToDelete))
-      toast.success('Devis supprimé avec succès')
+      setQuotes(quotes.filter((q) => q.id !== quoteToDelete));
+      toast.success("Devis supprimé avec succès");
     } else {
-      toast.error('Erreur lors de la suppression du devis')
+      toast.error("Erreur lors de la suppression du devis");
     }
-    setQuoteToDelete(null)
+    setQuoteToDelete(null);
   }
 
   return (
@@ -80,12 +82,13 @@ export default function QuotesList({ initialQuotes }: QuotesListProps) {
       </div>
 
       {quotes.length === 0 ? (
-        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-12 text-center">
-          <p className="text-foreground/60">Aucun devis pour le moment</p>
-          <p className="mt-1 text-sm text-foreground/40">
-            Créez votre premier devis pour commencer
-          </p>
-        </div>
+        <EmptyState
+          icon={FileText}
+          title="Aucun devis"
+          description="Créez votre premier devis pour vos clients."
+          actionLabel="Créer un devis"
+          actionHref="/dashboard/devis/nouveau"
+        />
       ) : (
         <div className="rounded-lg border border-foreground/10 bg-background">
           <div className="overflow-x-auto">
@@ -127,11 +130,13 @@ export default function QuotesList({ initialQuotes }: QuotesListProps) {
                       {quote.client.firstName} {quote.client.lastName}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-foreground/60">
-                      {new Date(quote.createdAt).toLocaleDateString('fr-FR')}
+                      {new Date(quote.createdAt).toLocaleDateString("fr-FR")}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       <span
-                        className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${statusColors[quote.status]}`}
+                        className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                          statusColors[quote.status]
+                        }`}
                       >
                         {statusLabels[quote.status]}
                       </span>
@@ -166,5 +171,5 @@ export default function QuotesList({ initialQuotes }: QuotesListProps) {
         variant="danger"
       />
     </div>
-  )
+  );
 }

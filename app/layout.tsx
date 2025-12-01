@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Toaster } from 'sonner'
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,8 +15,20 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Devisio - Créez des devis élégants pour votre institut",
-  description: "Devisio simplifie la création de devis professionnels pour les instituts de beauté. Gérez vos clients, services et générez des PDF personnalisés.",
+  description:
+    "Devisio simplifie la création de devis professionnels pour les instituts de beauté. Gérez vos clients, services et générez des PDF personnalisés.",
 };
+
+// Audit A11y en développement uniquement
+if (process.env.NODE_ENV === "development") {
+  import("@axe-core/react").then((axe) => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const React = require("react");
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const ReactDOM = require("react-dom");
+    axe.default(React, ReactDOM, 1000);
+  });
+}
 
 export default function RootLayout({
   children,

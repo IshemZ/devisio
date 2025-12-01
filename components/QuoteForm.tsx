@@ -1,38 +1,38 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
-import { createQuote } from '@/app/actions/quotes'
-import type { Client, Service } from '@prisma/client'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { createQuote } from "@/app/actions/quotes";
+import type { Client, Service } from "@prisma/client";
 
 interface QuoteFormProps {
-  clients: Client[]
-  services: Service[]
+  clients: Client[];
+  services: Service[];
 }
 
 interface QuoteItem {
-  serviceId?: string
-  name: string
-  description?: string
-  price: number
-  quantity: number
-  total: number
+  serviceId?: string;
+  name: string;
+  description?: string;
+  price: number;
+  quantity: number;
+  total: number;
 }
 
 export default function QuoteForm({ clients, services }: QuoteFormProps) {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [selectedClientId, setSelectedClientId] = useState('')
-  const [items, setItems] = useState<QuoteItem[]>([])
-  const [discount, setDiscount] = useState(0)
-  const [notes, setNotes] = useState('')
-  const [validUntil, setValidUntil] = useState('')
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedClientId, setSelectedClientId] = useState("");
+  const [items, setItems] = useState<QuoteItem[]>([]);
+  const [discount, setDiscount] = useState(0);
+  const [notes, setNotes] = useState("");
+  const [validUntil, setValidUntil] = useState("");
 
   function addServiceItem(serviceId: string) {
-    const service = services.find((s) => s.id === serviceId)
-    if (!service) return
+    const service = services.find((s) => s.id === serviceId);
+    if (!service) return;
 
     const newItem: QuoteItem = {
       serviceId: service.id,
@@ -41,45 +41,49 @@ export default function QuoteForm({ clients, services }: QuoteFormProps) {
       price: service.price,
       quantity: 1,
       total: service.price,
-    }
+    };
 
-    setItems([...items, newItem])
+    setItems([...items, newItem]);
   }
 
-  function updateItem(index: number, field: keyof QuoteItem, value: any) {
-    const newItems = [...items]
-    newItems[index] = { ...newItems[index], [field]: value }
+  function updateItem(
+    index: number,
+    field: keyof QuoteItem,
+    value: string | number
+  ) {
+    const newItems = [...items];
+    newItems[index] = { ...newItems[index], [field]: value };
 
     // Recalculate total for this item
-    if (field === 'price' || field === 'quantity') {
-      newItems[index].total = newItems[index].price * newItems[index].quantity
+    if (field === "price" || field === "quantity") {
+      newItems[index].total = newItems[index].price * newItems[index].quantity;
     }
 
-    setItems(newItems)
+    setItems(newItems);
   }
 
   function removeItem(index: number) {
-    setItems(items.filter((_, i) => i !== index))
+    setItems(items.filter((_, i) => i !== index));
   }
 
-  const subtotal = items.reduce((sum, item) => sum + item.total, 0)
-  const total = subtotal - discount
+  const subtotal = items.reduce((sum, item) => sum + item.total, 0);
+  const total = subtotal - discount;
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setIsLoading(true)
-    setError(null)
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
 
     if (!selectedClientId) {
-      setError('Veuillez sélectionner un client')
-      setIsLoading(false)
-      return
+      setError("Veuillez sélectionner un client");
+      setIsLoading(false);
+      return;
     }
 
     if (items.length === 0) {
-      setError('Veuillez ajouter au moins un article')
-      setIsLoading(false)
-      return
+      setError("Veuillez ajouter au moins un article");
+      setIsLoading(false);
+      return;
     }
 
     const quoteData = {
@@ -88,17 +92,17 @@ export default function QuoteForm({ clients, services }: QuoteFormProps) {
       discount,
       notes: notes || undefined,
       validUntil: validUntil ? new Date(validUntil) : undefined,
-    }
+    };
 
-    const result = await createQuote(quoteData)
+    const result = await createQuote(quoteData);
 
     if (result.error) {
-      setError(result.error)
-      toast.error('Erreur lors de la création du devis')
-      setIsLoading(false)
+      setError(result.error);
+      toast.error("Erreur lors de la création du devis");
+      setIsLoading(false);
     } else if (result.data) {
-      toast.success(`Devis ${result.data.quoteNumber} créé avec succès`)
-      router.push(`/dashboard/devis/${result.data.id}`)
+      toast.success(`Devis ${result.data.quoteNumber} créé avec succès`);
+      router.push(`/dashboard/devis/${result.data.id}`);
     }
   }
 
@@ -136,8 +140,8 @@ export default function QuoteForm({ clients, services }: QuoteFormProps) {
           <select
             onChange={(e) => {
               if (e.target.value) {
-                addServiceItem(e.target.value)
-                e.target.value = ''
+                addServiceItem(e.target.value);
+                e.target.value = "";
               }
             }}
             className="rounded-md border border-foreground/20 bg-background px-3 py-2 text-sm text-foreground focus:border-foreground/40 focus:outline-none focus:ring-1 focus:ring-foreground/40"
@@ -163,62 +167,104 @@ export default function QuoteForm({ clients, services }: QuoteFormProps) {
                 className="grid gap-4 rounded-md border border-foreground/10 p-4 sm:grid-cols-12"
               >
                 <div className="sm:col-span-4">
-                  <label className="block text-xs font-medium text-foreground/60">
+                  <label
+                    htmlFor={`item-name-${index}`}
+                    className="block text-xs font-medium text-foreground/60"
+                  >
                     Nom
                   </label>
                   <input
+                    id={`item-name-${index}`}
                     type="text"
                     value={item.name}
-                    onChange={(e) => updateItem(index, 'name', e.target.value)}
+                    onChange={(e) => updateItem(index, "name", e.target.value)}
                     className="mt-1 block w-full rounded-md border border-foreground/20 bg-background px-2 py-1 text-sm text-foreground focus:border-foreground/40 focus:outline-none"
+                    aria-label={`Nom du service ${index + 1}`}
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-medium text-foreground/60">
+                  <label
+                    htmlFor={`item-price-${index}`}
+                    className="block text-xs font-medium text-foreground/60"
+                  >
                     Prix unitaire
                   </label>
                   <input
+                    id={`item-price-${index}`}
                     type="number"
                     step="0.01"
                     value={item.price}
                     onChange={(e) =>
-                      updateItem(index, 'price', parseFloat(e.target.value) || 0)
+                      updateItem(
+                        index,
+                        "price",
+                        parseFloat(e.target.value) || 0
+                      )
                     }
                     className="mt-1 block w-full rounded-md border border-foreground/20 bg-background px-2 py-1 text-sm text-foreground focus:border-foreground/40 focus:outline-none"
+                    aria-label={`Prix unitaire du service ${index + 1}`}
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-medium text-foreground/60">
+                  <label
+                    htmlFor={`item-quantity-${index}`}
+                    className="block text-xs font-medium text-foreground/60"
+                  >
                     Quantité
                   </label>
                   <input
+                    id={`item-quantity-${index}`}
                     type="number"
                     min="1"
                     value={item.quantity}
                     onChange={(e) =>
-                      updateItem(index, 'quantity', parseInt(e.target.value) || 1)
+                      updateItem(
+                        index,
+                        "quantity",
+                        parseInt(e.target.value) || 1
+                      )
                     }
                     className="mt-1 block w-full rounded-md border border-foreground/20 bg-background px-2 py-1 text-sm text-foreground focus:border-foreground/40 focus:outline-none"
+                    aria-label={`Quantité du service ${index + 1}`}
                   />
                 </div>
 
                 <div className="sm:col-span-3">
-                  <label className="block text-xs font-medium text-foreground/60">
+                  <label
+                    htmlFor={`item-total-${index}`}
+                    className="block text-xs font-medium text-foreground/60"
+                  >
                     Total
                   </label>
                   <div className="mt-1 flex items-center justify-between">
-                    <span className="text-sm font-medium text-foreground">
+                    <span
+                      id={`item-total-${index}`}
+                      className="text-sm font-medium text-foreground"
+                      role="status"
+                      aria-live="polite"
+                    >
                       {item.total.toFixed(2)} €
                     </span>
                     <button
                       type="button"
                       onClick={() => removeItem(index)}
                       className="text-red-600 hover:text-red-800"
+                      aria-label={`Supprimer le service ${index + 1}`}
                     >
-                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <svg
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -226,7 +272,9 @@ export default function QuoteForm({ clients, services }: QuoteFormProps) {
 
                 {item.description && (
                   <div className="sm:col-span-12">
-                    <p className="text-xs text-foreground/60">{item.description}</p>
+                    <p className="text-xs text-foreground/60">
+                      {item.description}
+                    </p>
                   </div>
                 )}
               </div>
@@ -241,7 +289,10 @@ export default function QuoteForm({ clients, services }: QuoteFormProps) {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor="discount" className="block text-sm font-medium text-foreground">
+            <label
+              htmlFor="discount"
+              className="block text-sm font-medium text-foreground"
+            >
               Remise (€)
             </label>
             <input
@@ -256,8 +307,11 @@ export default function QuoteForm({ clients, services }: QuoteFormProps) {
           </div>
 
           <div>
-            <label htmlFor="validUntil" className="block text-sm font-medium text-foreground">
-              Valable jusqu'au
+            <label
+              htmlFor="validUntil"
+              className="block text-sm font-medium text-foreground"
+            >
+              Valable jusqu&apos;au
             </label>
             <input
               type="date"
@@ -270,7 +324,10 @@ export default function QuoteForm({ clients, services }: QuoteFormProps) {
         </div>
 
         <div className="mt-4">
-          <label htmlFor="notes" className="block text-sm font-medium text-foreground">
+          <label
+            htmlFor="notes"
+            className="block text-sm font-medium text-foreground"
+          >
             Notes
           </label>
           <textarea
@@ -286,17 +343,23 @@ export default function QuoteForm({ clients, services }: QuoteFormProps) {
         <div className="mt-6 space-y-2 border-t border-foreground/10 pt-4">
           <div className="flex justify-between text-sm">
             <span className="text-foreground/60">Sous-total</span>
-            <span className="font-medium text-foreground">{subtotal.toFixed(2)} €</span>
+            <span className="font-medium text-foreground">
+              {subtotal.toFixed(2)} €
+            </span>
           </div>
           {discount > 0 && (
             <div className="flex justify-between text-sm">
               <span className="text-foreground/60">Remise</span>
-              <span className="font-medium text-red-600">-{discount.toFixed(2)} €</span>
+              <span className="font-medium text-red-600">
+                -{discount.toFixed(2)} €
+              </span>
             </div>
           )}
           <div className="flex justify-between border-t border-foreground/10 pt-2 text-lg">
             <span className="font-semibold text-foreground">Total</span>
-            <span className="font-bold text-foreground">{total.toFixed(2)} €</span>
+            <span className="font-bold text-foreground">
+              {total.toFixed(2)} €
+            </span>
           </div>
         </div>
       </div>
@@ -315,9 +378,9 @@ export default function QuoteForm({ clients, services }: QuoteFormProps) {
           disabled={isLoading}
           className="rounded-md bg-foreground px-6 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90 disabled:opacity-50"
         >
-          {isLoading ? 'Création...' : 'Créer le devis'}
+          {isLoading ? "Création..." : "Créer le devis"}
         </button>
       </div>
     </form>
-  )
+  );
 }

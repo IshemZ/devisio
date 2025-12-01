@@ -1,0 +1,208 @@
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { getClients, createClient, deleteClient } from "@/app/actions/clients";
+import prisma from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+
+// Mock dependencies
+vi.mock("next-auth", () => ({
+  getServerSession: vi.fn(),
+}));
+
+vi.mock("@/lib/prisma", () => ({
+  default: {
+    client: {
+      findMany: vi.fn(),
+      create: vi.fn(),
+      delete: vi.fn(),
+    },
+  },
+}));
+
+vi.mock("next/cache", () => ({
+  revalidatePath: vi.fn(),
+}));
+
+describe("Client Server Actions", () => {
+  const mockSession = {
+    user: {
+      id: "user_123",
+      businessId: "business_123",
+      email: "test@example.com",
+      name: "Test User",
+    },
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe("getClients", () => {
+    it("should return clients for authenticated user", async () => {
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+      vi.mocked(prisma.client.findMany).mockResolvedValue([
+        {
+          id: "client_1",
+          firstName: "Jean",
+          lastName: "Dupont",
+          email: "jean@example.com",
+          phone: "0123456789",
+          address: "1 rue de Paris",
+          notes: null,
+          businessId: "business_123",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ]);
+
+      const result = await getClients();
+
+      expect(result.data).toHaveLength(1);
+      expect(result.data?.[0].firstName).toBe("Jean");
+
+      // ✅ CRITIQUE: Vérifier que le filtrage businessId est appliqué
+      expect(prisma.client.findMany).toHaveBeenCalledWith({
+        where: { businessId: "business_123" },
+        orderBy: { createdAt: "desc" },
+      });
+    });
+
+    it("should return error if not authenticated", async () => {
+      vi.mocked(getServerSession).mockResolvedValue(null);
+
+      const result = await getClients();
+
+      expect(result.error).toBe("Non autorisé");
+      expect(result.data).toBeUndefined();
+      expect(prisma.client.findMany).not.toHaveBeenCalled();
+    });
+
+    it("should return error if businessId missing", async () => {
+      vi.mocked(getServerSession).mockResolvedValue({
+        user: {
+          id: "user_123",
+          businessId: null,
+          email: "test@example.com",
+        },
+      } as any);
+
+      const result = await getClients();
+
+      expect(result.error).toBe("Non autorisé");
+      expect(prisma.client.findMany).not.toHaveBeenCalled();
+    });
+
+    it("should handle database errors gracefully", async () => {
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+      vi.mocked(prisma.client.findMany).mockRejectedValue(
+        new Error("Database connection failed")
+      );
+
+      const result = await getClients();
+
+      expect(result.error).toBe("Erreur lors de la récupération des clients");
+      expect(result.data).toBeUndefined();
+    });
+  });
+
+  describe("createClient", () => {
+    it("should create client with valid data", async () => {
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+
+      const newClientData = {
+        firstName: "Marie",
+        lastName: "Martin",
+        email: "marie@example.com",
+        phone: "0987654321",
+      };
+
+      const createdClient = {
+        id: "client_new",
+        ...newClientData,
+        address: null,
+        notes: null,
+        businessId: "business_123",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      vi.mocked(prisma.client.create).mockResolvedValue(createdClient);
+
+      const result = await createClient(newClientData);
+
+      expect(result.data).toBeDefined();
+      expect(result.data?.firstName).toBe("Marie");
+
+      // ✅ CRITIQUE: Vérifier injection businessId
+      expect(prisma.client.create).toHaveBeenCalledWith({
+        data: {
+          ...newClientData,
+          businessId: "business_123",
+        },
+      });
+    });
+
+    it("should return validation error for invalid data", async () => {
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+
+      const result = await createClient({
+        firstName: "", // Invalide
+        lastName: "Test",
+      } as any);
+
+      expect(result.error).toBe("Données invalides");
+      expect(result.fieldErrors).toBeDefined();
+      expect(prisma.client.create).not.toHaveBeenCalled();
+    });
+
+    it("should return error if not authenticated", async () => {
+      vi.mocked(getServerSession).mockResolvedValue(null);
+
+      const result = await createClient({
+        firstName: "Test",
+        lastName: "User",
+      });
+
+      expect(result.error).toBe("Non autorisé");
+      expect(prisma.client.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("deleteClient - Multi-tenancy Security", () => {
+    it("should only delete client from own business", async () => {
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+      vi.mocked(prisma.client.delete).mockResolvedValue({
+        id: "client_123",
+        firstName: "Jean",
+        lastName: "Dupont",
+        email: null,
+        phone: null,
+        address: null,
+        notes: null,
+        businessId: "business_123",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      await deleteClient("client_123");
+
+      // ✅ CRITIQUE: Vérifier filtrage businessId dans delete
+      expect(prisma.client.delete).toHaveBeenCalledWith({
+        where: {
+          id: "client_123",
+          businessId: "business_123", // Protection multi-tenant
+        },
+      });
+    });
+
+    it("should return error if client not found or belongs to another business", async () => {
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+      vi.mocked(prisma.client.delete).mockRejectedValue(
+        new Error("Record not found")
+      );
+
+      const result = await deleteClient("client_other");
+
+      expect(result.error).toBe("Erreur lors de la suppression du client");
+    });
+  });
+});
