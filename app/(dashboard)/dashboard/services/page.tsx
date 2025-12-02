@@ -1,14 +1,14 @@
-import { Metadata } from 'next'
-import { getServices } from '@/app/actions/services'
-import ServicesList from '@/components/ServicesList'
+import { Metadata } from "next";
+import { getServices } from "@/app/actions/services";
+import ServicesList from "@/components/ServicesList";
 
 export const metadata: Metadata = {
-  title: 'Services | Devisio',
-  description: 'Gérez votre catalogue de services',
-}
+  title: "Services | Solkant",
+  description: "Gérez votre catalogue de services",
+};
 
 export default async function ServicesPage() {
-  const result = await getServices()
+  const result = await getServices();
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -29,5 +29,5 @@ export default async function ServicesPage() {
         <ServicesList initialServices={result.data || []} />
       )}
     </div>
-  )
+  );
 }

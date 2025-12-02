@@ -6,7 +6,7 @@
 
 ## Mission Principale
 
-Implémenter une suite de tests complète pour Devisio afin de sécuriser les évolutions et maintenir la fiabilité du SaaS.
+Implémenter une suite de tests complète pour Solkant afin de sécuriser les évolutions et maintenir la fiabilité du SaaS.
 
 ---
 

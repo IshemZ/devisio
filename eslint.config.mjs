@@ -7,7 +7,7 @@ const eslintConfig = defineConfig([
   ...nextTs,
   {
     rules: {
-      // Règles A11y supplémentaires pour Devisio
+      // Règles A11y supplémentaires pour Solkant
       "jsx-a11y/anchor-is-valid": "error",
       "jsx-a11y/alt-text": "error",
       "jsx-a11y/aria-props": "error",

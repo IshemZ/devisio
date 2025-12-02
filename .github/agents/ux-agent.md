@@ -6,7 +6,7 @@
 
 ## Mission Principale
 
-Améliorer l'expérience utilisateur de Devisio en créant des composants UI cohérents, accessibles, et réutilisables, tout en garantissant une interface intuitive pour les instituts de beauté.
+Améliorer l'expérience utilisateur de Solkant en créant des composants UI cohérents, accessibles, et réutilisables, tout en garantissant une interface intuitive pour les instituts de beauté.
 
 ---
 
@@ -332,7 +332,7 @@ const colors = {
     {children}
   </main>
 
-  <footer role="contentinfo">© 2025 Devisio</footer>
+  <footer role="contentinfo">© 2025 Solkant</footer>
 </body>
 ```
 

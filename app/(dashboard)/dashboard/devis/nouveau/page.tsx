@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import { Users, Briefcase } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Nouveau devis | Devisio",
+  title: "Nouveau devis | Solkant",
   description: "Créer un nouveau devis",
 };
 

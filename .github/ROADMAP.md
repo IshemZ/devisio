@@ -1,4 +1,4 @@
-# 🗺️ Plan d'Action Devisio - Q1 2025
+# 🗺️ Plan d'Action Solkant - Q1 2025
 
 **Période** : Décembre 2025 - Février 2026  
 **Objectif** : Passer de 8.5/10 à 9.5/10 en production readiness

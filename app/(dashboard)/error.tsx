@@ -52,7 +52,7 @@ export default function Error({
         <p className="mt-4 text-sm text-muted-foreground">
           Si le problème persiste,{" "}
           <a
-            href="mailto:support@devisio.fr"
+            href="mailto:support@solkant.fr"
             className="underline hover:text-foreground"
           >
             contactez le support

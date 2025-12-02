@@ -1,14 +1,14 @@
-import { Metadata } from 'next'
-import { getClients } from '@/app/actions/clients'
-import ClientsList from '@/components/ClientsList'
+import { Metadata } from "next";
+import { getClients } from "@/app/actions/clients";
+import ClientsList from "@/components/ClientsList";
 
 export const metadata: Metadata = {
-  title: 'Clients | Devisio',
-  description: 'Gérez vos clients',
-}
+  title: "Clients | Solkant",
+  description: "Gérez vos clients",
+};
 
 export default async function ClientsPage() {
-  const result = await getClients()
+  const result = await getClients();
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -29,5 +29,5 @@ export default async function ClientsPage() {
         <ClientsList initialClients={result.data || []} />
       )}
     </div>
-  )
+  );
 }

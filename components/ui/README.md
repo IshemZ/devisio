@@ -1,8 +1,8 @@
-# 🎨 Guide des Composants UI - Devisio
+# 🎨 Guide des Composants UI - Solkant
 
 ## Vue d'ensemble
 
-Devisio utilise **shadcn/ui** comme design system avec un thème beauté/élégance personnalisé.
+Solkant utilise **shadcn/ui** comme design system avec un thème beauté/élégance personnalisé.
 
 ### Thème de couleurs
 

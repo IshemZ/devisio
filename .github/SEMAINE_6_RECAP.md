@@ -1,7 +1,7 @@
 # ✅ Semaine 6 : Refactor Formulaires - TERMINÉE
 
 **Date** : 1er décembre 2025  
-**Roadmap** : Q1 2025 - Devisio
+**Roadmap** : Q1 2025 - Solkant
 
 ---
 

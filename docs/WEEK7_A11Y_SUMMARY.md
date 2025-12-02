@@ -8,7 +8,7 @@
 
 ## 📊 Résumé Exécutif
 
-La semaine 7 du roadmap Devisio a été entièrement complétée avec succès. **Devisio est maintenant conforme WCAG 2.1 AA** avec 0 violation A11y détectée.
+La semaine 7 du roadmap Solkant a été entièrement complétée avec succès. **Solkant est maintenant conforme WCAG 2.1 AA** avec 0 violation A11y détectée.
 
 ### 🎯 Objectifs Atteints
 
@@ -276,7 +276,7 @@ a:focus-visible {
 
 La **Semaine 7 : Accessibilité (A11y)** est **100% complétée** avec succès.
 
-**Devisio est maintenant** :
+**Solkant est maintenant** :
 
 - ✅ Conforme WCAG 2.1 AA
 - ✅ 0 violation A11y

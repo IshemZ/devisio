@@ -6,7 +6,7 @@ import { ServiceForm } from "@/components/forms";
 import prisma from "@/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "Modifier service - Devisio",
+  title: "Modifier service - Solkant",
   description: "Modifier les informations d'un service",
 };
 

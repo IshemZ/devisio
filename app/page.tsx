@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -8,7 +8,7 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-foreground">Devisio</h1>
+              <h1 className="text-2xl font-bold text-foreground">Solkant</h1>
             </div>
             <div className="flex items-center gap-4">
               <Link
@@ -37,8 +37,9 @@ export default function Home() {
             <span className="text-foreground/60">pour votre institut</span>
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-foreground/60">
-            Devisio simplifie la création de devis professionnels pour les instituts de beauté.
-            Gérez vos clients, services et générez des PDF personnalisés en quelques clics.
+            Solkant simplifie la création de devis professionnels pour les
+            instituts de beauté. Gérez vos clients, services et générez des PDF
+            personnalisés en quelques clics.
           </p>
           <div className="mt-10 flex items-center justify-center gap-4">
             <Link
@@ -91,7 +92,8 @@ export default function Home() {
                 Devis professionnels
               </h4>
               <p className="mt-2 text-foreground/60">
-                Créez des devis élégants et personnalisés avec votre logo et vos couleurs en quelques clics.
+                Créez des devis élégants et personnalisés avec votre logo et vos
+                couleurs en quelques clics.
               </p>
             </div>
 
@@ -116,7 +118,8 @@ export default function Home() {
                 Gestion clients
               </h4>
               <p className="mt-2 text-foreground/60">
-                Gérez facilement vos clients et leur historique de devis depuis un seul endroit.
+                Gérez facilement vos clients et leur historique de devis depuis
+                un seul endroit.
               </p>
             </div>
 
@@ -141,7 +144,8 @@ export default function Home() {
                 Catalogue de services
               </h4>
               <p className="mt-2 text-foreground/60">
-                Créez votre catalogue de prestations avec prix et durées pour générer vos devis rapidement.
+                Créez votre catalogue de prestations avec prix et durées pour
+                générer vos devis rapidement.
               </p>
             </div>
 
@@ -166,7 +170,8 @@ export default function Home() {
                 Personnalisation
               </h4>
               <p className="mt-2 text-foreground/60">
-                Adaptez les couleurs et le design à l&apos;identité visuelle de votre institut.
+                Adaptez les couleurs et le design à l&apos;identité visuelle de
+                votre institut.
               </p>
             </div>
 
@@ -191,7 +196,8 @@ export default function Home() {
                 Simple et rapide
               </h4>
               <p className="mt-2 text-foreground/60">
-                Interface intuitive pensée pour gagner du temps au quotidien. Pas de complexité inutile.
+                Interface intuitive pensée pour gagner du temps au quotidien.
+                Pas de complexité inutile.
               </p>
             </div>
 
@@ -216,7 +222,8 @@ export default function Home() {
                 Sécurisé
               </h4>
               <p className="mt-2 text-foreground/60">
-                Vos données sont protégées et hébergées de manière sécurisée. Confidentiel et fiable.
+                Vos données sont protégées et hébergées de manière sécurisée.
+                Confidentiel et fiable.
               </p>
             </div>
           </div>
@@ -231,7 +238,8 @@ export default function Home() {
               Prêt à simplifier votre gestion de devis ?
             </h3>
             <p className="mx-auto mt-4 max-w-xl text-lg text-background/80">
-              Rejoignez les instituts qui utilisent Devisio pour créer des devis professionnels en quelques minutes.
+              Rejoignez les instituts qui utilisent Solkant pour créer des devis
+              professionnels en quelques minutes.
             </p>
             <div className="mt-10">
               <Link
@@ -250,11 +258,11 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="text-center">
             <p className="text-sm text-foreground/60">
-              &copy; {new Date().getFullYear()} Devisio. Tous droits réservés.
+              &copy; {new Date().getFullYear()} Solkant. Tous droits réservés.
             </p>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }

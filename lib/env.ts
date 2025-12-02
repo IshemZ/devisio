@@ -41,7 +41,7 @@ const envSchema = z.object({
     .url("NEXTAUTH_URL doit être une URL valide")
     .optional()
     .describe(
-      "URL de l'application (auto-détecté en dev, requis en prod: https://devisio.fr)"
+      "URL de l'application (auto-détecté en dev, requis en prod: https://solkant.fr)"
     ),
 
   NEXTAUTH_SECRET: z
@@ -243,7 +243,7 @@ function maskSecret(secret: string): string {
  * ```
  */
 export function generateEnvTemplate(): string {
-  return `# 🔐 Devisio - Environment Variables
+  return `# 🔐 Solkant - Environment Variables
 # Copier ce fichier vers .env.local et remplir les valeurs
 
 # ===== DATABASE (REQUIRED) =====

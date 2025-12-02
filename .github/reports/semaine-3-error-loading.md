@@ -102,10 +102,10 @@ export default function Error({
         <p className="text-sm text-foreground/50">
           Si le problème persiste, contactez{" "}
           <a
-            href="mailto:support@devisio.fr"
+            href="mailto:support@solkant.fr"
             className="text-foreground underline"
           >
-            support@devisio.fr
+            support@solkant.fr
           </a>
         </p>
       </div>

@@ -1,10 +1,10 @@
-import { Metadata } from 'next'
-import LoginForm from '@/components/auth/LoginForm'
+import { Metadata } from "next";
+import LoginForm from "@/components/auth/LoginForm";
 
 export const metadata: Metadata = {
-  title: 'Connexion | Devisio',
-  description: 'Connectez-vous à votre compte Devisio',
-}
+  title: "Connexion | Solkant",
+  description: "Connectez-vous à votre compte Solkant",
+};
 
 export default function LoginPage() {
   return (
@@ -12,7 +12,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Devisio
+            Solkant
           </h1>
           <p className="mt-2 text-sm text-foreground/60">
             Connectez-vous à votre compte
@@ -22,7 +22,7 @@ export default function LoginPage() {
         <LoginForm />
 
         <p className="text-center text-sm text-foreground/60">
-          Pas encore de compte ?{' '}
+          Pas encore de compte ?{" "}
           <a
             href="/register"
             className="font-medium text-foreground hover:underline"
@@ -32,5 +32,5 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
-  )
+  );
 }

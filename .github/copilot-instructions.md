@@ -1,8 +1,8 @@
-# Devisio - AI Coding Agent Instructions
+# Solkant - AI Coding Agent Instructions
 
 ## Project Overview
 
-**Devisio** is a French-language quote/estimate management SaaS for beauty salons and service businesses. Built with Next.js 16 (App Router), NextAuth v4, Prisma ORM, and PostgreSQL.
+**Solkant** is a French-language quote/estimate management SaaS for beauty salons and service businesses. Built with Next.js 16 (App Router), NextAuth v4, Prisma ORM, and PostgreSQL.
 
 ## Architecture
 

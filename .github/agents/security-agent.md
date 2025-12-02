@@ -6,7 +6,7 @@
 
 ## Mission Principale
 
-Garantir la sécurité du SaaS Devisio en protégeant les données des utilisateurs et en maintenant une isolation stricte entre les tenants (Business).
+Garantir la sécurité du SaaS Solkant en protégeant les données des utilisateurs et en maintenant une isolation stricte entre les tenants (Business).
 
 ---
 

@@ -5,7 +5,7 @@ import { DashboardStats } from "@/components/DashboardStats";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Tableau de bord | Devisio",
+  title: "Tableau de bord | Solkant",
   description: "Gérez vos devis et clients",
 };
 

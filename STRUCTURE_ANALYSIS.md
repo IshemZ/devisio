@@ -1,4 +1,4 @@
-# 📊 Compte Rendu - Structure du Projet Devisio
+# 📊 Compte Rendu - Structure du Projet Solkant
 
 **Date d'analyse** : 1er décembre 2025  
 **Framework** : Next.js 16 (App Router)  
@@ -385,7 +385,7 @@ tests/                   # ← À CRÉER
 
 ## 📊 Comparaison avec Standards Industrie
 
-| Critère           | Devisio       | Standard       | Note       |
+| Critère           | Solkant       | Standard       | Note       |
 | ----------------- | ------------- | -------------- | ---------- |
 | TypeScript strict | ✅ Oui        | ✅ Essentiel   | ⭐⭐⭐⭐⭐ |
 | Testing           | ❌ Non        | ✅ Requis      | ⭐         |
@@ -444,7 +444,7 @@ tests/                   # ← À CRÉER
 
 ## 💡 Conclusion
 
-**Devisio est un projet moderne et bien architecturé** qui utilise les dernières best practices React/Next.js. La structure Server-First avec Server Actions est exemplaire pour un SaaS B2B.
+**Solkant est un projet moderne et bien architecturé** qui utilise les dernières best practices React/Next.js. La structure Server-First avec Server Actions est exemplaire pour un SaaS B2B.
 
 ### Points d'Excellence
 

@@ -355,7 +355,7 @@ console.log(generateEnvTemplate());
 Output :
 
 ```bash
-# 🔐 Devisio - Environment Variables
+# 🔐 Solkant - Environment Variables
 # Copier ce fichier vers .env.local et remplir les valeurs
 
 # ===== DATABASE (REQUIRED) =====

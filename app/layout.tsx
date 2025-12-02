@@ -18,9 +18,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Devisio - Créez des devis élégants pour votre institut",
+  title: "Solkant - Créez des devis élégants pour votre institut",
   description:
-    "Devisio simplifie la création de devis professionnels pour les instituts de beauté. Gérez vos clients, services et générez des PDF personnalisés.",
+    "Solkant simplifie la création de devis professionnels pour les instituts de beauté. Gérez vos clients, services et générez des PDF personnalisés.",
 };
 
 // Audit A11y en développement uniquement - DÉSACTIVÉ temporairement

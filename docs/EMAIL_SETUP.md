@@ -1,4 +1,4 @@
-# Configuration de l'Envoi d'Emails - Devisio
+# Configuration de l'Envoi d'Emails - Solkant
 
 Ce document explique comment configurer l'envoi d'emails pour les devis en production.
 

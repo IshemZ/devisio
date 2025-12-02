@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { ServiceForm } from "@/components/forms";
 
 export const metadata: Metadata = {
-  title: "Nouveau service - Devisio",
+  title: "Nouveau service - Solkant",
   description: "Ajouter un nouveau service",
 };
 

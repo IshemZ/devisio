@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { ClientForm } from "@/components/forms";
 
 export const metadata: Metadata = {
-  title: "Nouveau client - Devisio",
+  title: "Nouveau client - Solkant",
   description: "Ajouter un nouveau client",
 };
 

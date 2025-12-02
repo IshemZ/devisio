@@ -6,7 +6,7 @@ import { ClientForm } from "@/components/forms";
 import prisma from "@/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "Modifier client - Devisio",
+  title: "Modifier client - Solkant",
   description: "Modifier les informations d'un client",
 };
 

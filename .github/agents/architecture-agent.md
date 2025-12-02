@@ -6,7 +6,7 @@
 
 ## Mission Principale
 
-Maintenir et améliorer l'architecture Server-First du projet Devisio en suivant les best practices Next.js 16 et React 19.
+Maintenir et améliorer l'architecture Server-First du projet Solkant en suivant les best practices Next.js 16 et React 19.
 
 ---
 

@@ -1,4 +1,4 @@
-# ✅ Checklist Production - Devisio
+# ✅ Checklist Production - Solkant
 
 **Date de l'audit** : 2 décembre 2025  
 **Branche** : `test` → `main`
@@ -53,7 +53,7 @@
 
 ### ✅ 5. robots.txt fixé
 
-- [x] URL changée de `solkant.com` → `devisio.vercel.app`
+- [x] URL changée de `solkant.com` → `solkant.vercel.app`
 
 ---
 
@@ -216,7 +216,7 @@ Dans Vercel Dashboard → Settings → Environment Variables :
 ```
 DATABASE_URL          = postgres://... (Neon pooled)
 DIRECT_URL            = postgres://... (Neon direct)
-NEXTAUTH_URL          = https://devisio.vercel.app
+NEXTAUTH_URL          = https://solkant.vercel.app
 NEXTAUTH_SECRET       = [générer nouveau secret]
 GOOGLE_CLIENT_ID      = [optionnel]
 GOOGLE_CLIENT_SECRET  = [optionnel]

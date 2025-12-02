@@ -316,7 +316,7 @@ export default function QuotePDF({ quote }: QuotePDFProps) {
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            Devis généré automatiquement par Devisio
+            Devis généré automatiquement par Solkant
           </Text>
           <Text style={styles.footerText}>
             Ce devis est valable{" "}

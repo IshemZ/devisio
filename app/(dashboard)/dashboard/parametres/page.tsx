@@ -4,7 +4,7 @@ import BusinessSettingsForm from "@/components/BusinessSettingsForm";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Paramètres | Devisio",
+  title: "Paramètres | Solkant",
   description: "Gérez les informations de votre entreprise",
 };
 

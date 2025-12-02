@@ -1,4 +1,4 @@
-# Audit Accessibilité des Couleurs - Devisio
+# Audit Accessibilité des Couleurs - Solkant
 
 **Date**: 1er décembre 2025  
 **Standard**: WCAG 2.1 AA  

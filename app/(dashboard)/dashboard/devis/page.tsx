@@ -1,14 +1,14 @@
-import { Metadata } from 'next'
-import { getQuotes } from '@/app/actions/quotes'
-import QuotesList from '@/components/QuotesList'
+import { Metadata } from "next";
+import { getQuotes } from "@/app/actions/quotes";
+import QuotesList from "@/components/QuotesList";
 
 export const metadata: Metadata = {
-  title: 'Mes devis | Devisio',
-  description: 'Consultez tous vos devis',
-}
+  title: "Mes devis | Solkant",
+  description: "Consultez tous vos devis",
+};
 
 export default async function DevisPage() {
-  const result = await getQuotes()
+  const result = await getQuotes();
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -29,5 +29,5 @@ export default async function DevisPage() {
         <QuotesList initialQuotes={result.data || []} />
       )}
     </div>
-  )
+  );
 }

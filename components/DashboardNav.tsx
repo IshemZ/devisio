@@ -22,7 +22,7 @@ export default function DashboardNav({
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-8">
             <Link href="/dashboard" aria-label="Retour au tableau de bord">
-              <h1 className="text-2xl font-bold text-foreground">Devisio</h1>
+              <h1 className="text-2xl font-bold text-foreground">Solkant</h1>
             </Link>
             <nav
               className="hidden md:flex items-center gap-6"

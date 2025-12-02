@@ -1,12 +1,12 @@
-# Accessibilité (A11y) - Devisio
+# Accessibilité (A11y) - Solkant
 
-Documentation complète de l'accessibilité pour Devisio, conforme WCAG 2.1 AA.
+Documentation complète de l'accessibilité pour Solkant, conforme WCAG 2.1 AA.
 
 ---
 
 ## 📋 Conformité WCAG 2.1 AA
 
-Devisio est conçu pour être accessible à tous les utilisateurs, y compris ceux utilisant des technologies d'assistance.
+Solkant est conçu pour être accessible à tous les utilisateurs, y compris ceux utilisant des technologies d'assistance.
 
 ### ✅ Critères Respectés
 
