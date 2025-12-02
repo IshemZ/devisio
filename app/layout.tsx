@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
-import { getEnv } from "@/lib/env";
 
-// Validate environment variables at startup (server-side only)
-getEnv();
+// NOTE: Validation des env vars déplacée dans instrumentation.ts
+// pour éviter erreurs au build time sur Vercel
+// Les env vars sont validées au runtime via instrumentation.ts
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
