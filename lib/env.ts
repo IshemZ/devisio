@@ -36,13 +36,9 @@ const envSchema = z.object({
     .describe("Neon direct connection string (pour migrations Prisma)"),
 
   // ===== AUTH (REQUIRED) =====
-  NEXTAUTH_URL: z
-    .string()
-    .url("NEXTAUTH_URL doit être une URL valide")
-    .optional()
-    .describe(
-      "URL de l'application (auto-détecté en dev, requis en prod: https://solkant.fr)"
-    ),
+  // NOTE: NEXTAUTH_URL est auto-détecté par NextAuth.js (inutile de le définir)
+  // Seulement utile en dev local si URL non-standard (autre que localhost:3000)
+  // Voir: https://next-auth.js.org/configuration/options#nextauth_url
 
   NEXTAUTH_SECRET: z
     .string()
@@ -112,21 +108,110 @@ export function validateEnv(): Env {
     return validated;
   } catch (error) {
     if (error instanceof z.ZodError) {
-      console.error("❌ Invalid environment variables:");
-      console.error(JSON.stringify(error.format(), null, 2));
+      console.error("\n" + "=".repeat(80));
+      console.error("❌ ERREUR DE VALIDATION DES VARIABLES D'ENVIRONNEMENT");
+      console.error("=".repeat(80) + "\n");
+
+      // Grouper les erreurs par type
+      const missingVars: string[] = [];
+      const invalidVars: Array<{
+        name: string;
+        reason: string;
+        received: string;
+      }> = [];
+      const otherErrors: Array<{ name: string; message: string }> = [];
+
+      error.issues.forEach((issue) => {
+        const varName = issue.path.join(".");
+        const receivedValue = process.env[varName];
+
+        if (issue.code === "invalid_type" && receivedValue === undefined) {
+          missingVars.push(varName);
+        } else if (issue.message && receivedValue !== undefined) {
+          // Variable existe mais invalide
+          invalidVars.push({
+            name: varName,
+            reason: issue.message,
+            received: receivedValue
+              ? `"${String(receivedValue).substring(0, 40)}..."`
+              : "vide",
+          });
+        } else {
+          otherErrors.push({
+            name: varName,
+            message: issue.message,
+          });
+        }
+      });
 
       // Afficher variables manquantes
-      const missingVars = error.issues
-        .filter((err) => err.code === "invalid_type")
-        .map((err) => err.path.join("."));
-
       if (missingVars.length > 0) {
-        console.error("\n📋 Variables manquantes :");
-        missingVars.forEach((v: string) => console.error(`  - ${v}`));
+        console.error("📋 VARIABLES MANQUANTES :");
+        console.error("-".repeat(80));
+        missingVars.forEach((v: string) => {
+          // Accès sécurisé à la description via type assertion
+          const schemaKey = v as keyof typeof envSchema.shape;
+          const fieldSchema = envSchema.shape[schemaKey];
+          const description =
+            fieldSchema &&
+            typeof fieldSchema === "object" &&
+            "description" in fieldSchema
+              ? fieldSchema.description
+              : "Aucune description disponible";
+
+          console.error(`\n  ❌ ${v}`);
+          console.error(`     Description: ${description}`);
+        });
+        console.error("\n");
       }
 
+      // Afficher variables invalides
+      if (invalidVars.length > 0) {
+        console.error("⚠️  VARIABLES INVALIDES :");
+        console.error("-".repeat(80));
+        invalidVars.forEach(({ name, reason, received }) => {
+          console.error(`\n  ❌ ${name}`);
+          console.error(`     Raison: ${reason}`);
+          console.error(`     Valeur reçue: ${received}`);
+        });
+        console.error("\n");
+      }
+
+      // Afficher autres erreurs
+      if (otherErrors.length > 0) {
+        console.error("🔴 AUTRES ERREURS :");
+        console.error("-".repeat(80));
+        otherErrors.forEach(({ name, message }) => {
+          console.error(`\n  ❌ ${name}: ${message}`);
+        });
+        console.error("\n");
+      }
+
+      // Afficher le JSON formaté complet en mode debug
+      console.error("🔍 DÉTAILS COMPLETS (format JSON) :");
+      console.error("-".repeat(80));
+      console.error(JSON.stringify(error.format(), null, 2));
+
+      // Instructions de correction
+      console.error("\n" + "=".repeat(80));
+      console.error("💡 COMMENT CORRIGER :");
+      console.error("=".repeat(80));
+      console.error(
+        "\n1. Vérifiez que le fichier .env.local existe à la racine du projet"
+      );
+      console.error(
+        "2. Assurez-vous que toutes les variables requises sont définies"
+      );
+      console.error(
+        "3. Redémarrez le serveur après modification : npm run dev"
+      );
+      console.error(
+        "\n📄 Générer un template : Consultez la fonction generateEnvTemplate()"
+      );
+      console.error("=".repeat(80) + "\n");
+
       throw new Error(
-        "Environment variables validation failed. Check .env.local file."
+        `Validation des variables d'environnement échouée. ${missingVars.length} variable(s) manquante(s), ${invalidVars.length} invalide(s).`
       );
     }
     throw error;
@@ -150,45 +235,56 @@ export function validateEnv(): Env {
 let cachedEnv: Env | undefined;
 
 export function getEnv(): Env {
-  if (!cachedEnv) {
+  // En mode développement avec Turbopack, s'assurer que les variables sont chargées
+  if (typeof window === "undefined" && !cachedEnv) {
+    // Si on est côté serveur et pas encore validé
     cachedEnv = validateEnv();
   }
+
+  if (!cachedEnv) {
+    // Fallback : si pas de cache, valider (ne devrait arriver qu'en tests)
+    cachedEnv = validateEnv();
+  }
+
   return cachedEnv;
 }
 
 /**
  * Vérifie si une feature optionnelle est activée
  * Basé sur la présence des env vars nécessaires
+ *
+ * PATTERN: Lazy evaluation pour éviter validation prématurée
  */
 export const features = {
   /** Google OAuth login disponible */
   get googleOAuth(): boolean {
+    if (typeof window !== "undefined") return false; // Côté client
     const env = getEnv();
     return !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
   },
 
   /** Sentry error monitoring activé */
   get sentryMonitoring(): boolean {
+    if (typeof window !== "undefined") return false; // Côté client
     const env = getEnv();
     return !!env.SENTRY_DSN;
   },
 
   /** Rate limiting activé (Upstash Redis) */
   get rateLimiting(): boolean {
+    if (typeof window !== "undefined") return false; // Côté client
     const env = getEnv();
     return !!(env.UPSTASH_REDIS_URL && env.UPSTASH_REDIS_TOKEN);
   },
 
   /** Mode production */
   get isProduction(): boolean {
-    const env = getEnv();
-    return env.NODE_ENV === "production";
+    return process.env.NODE_ENV === "production";
   },
 
   /** Mode development */
   get isDevelopment(): boolean {
-    const env = getEnv();
-    return env.NODE_ENV === "development";
+    return process.env.NODE_ENV === "development";
   },
 };
 
@@ -205,8 +301,12 @@ export function logEnvSummary(): void {
   console.log(`  NODE_ENV: ${env.NODE_ENV}`);
   console.log(`  DATABASE_URL: ${maskSecret(env.DATABASE_URL)}`);
   console.log(`  DIRECT_URL: ${maskSecret(env.DIRECT_URL)}`);
-  console.log(`  NEXTAUTH_URL: ${env.NEXTAUTH_URL}`);
   console.log(`  NEXTAUTH_SECRET: ${maskSecret(env.NEXTAUTH_SECRET)}`);
+  console.log(
+    `  NEXTAUTH_URL: auto-détecté par NextAuth (${
+      process.env.NEXTAUTH_URL || "non défini"
+    })`
+  );
 
   console.log("\n✨ Optional Features:");
   console.log(`  Google OAuth: ${features.googleOAuth ? "✅" : "❌"}`);
@@ -252,7 +352,9 @@ DATABASE_URL="postgres://user:password@host/database?sslmode=require&pgbouncer=t
 DIRECT_URL="postgres://user:password@host/database?sslmode=require"
 
 # ===== AUTH (REQUIRED) =====
-NEXTAUTH_URL="http://localhost:3000"
+# NOTE: NEXTAUTH_URL est auto-détecté par NextAuth (pas besoin de le définir)
+# Seulement nécessaire si URL custom en dev (ex: ngrok, tunnel)
+# NEXTAUTH_URL="http://localhost:3000" # Optionnel
 NEXTAUTH_SECRET="" # Générer avec: openssl rand -base64 32
 
 # ===== OAUTH (OPTIONAL) =====

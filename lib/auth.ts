@@ -13,66 +13,77 @@ import { getEnv, features } from "./env";
  * - Authentication providers (Credentials, Google OAuth)
  * - Session strategy
  * - Callbacks for JWT and session handling
+ *
+ * ARCHITECTURE: Lazy evaluation pattern pour éviter validation prématurée
  */
 
-const env = getEnv();
+// ❌ ÉVITER: const env = getEnv(); // Exécuté au module load time
+// ✅ PATTERN: Fonction factory qui évalue getEnv() à la runtime
 
-// Build providers array dynamically based on available credentials
-const providers: NextAuthOptions["providers"] = [
-  // Email/Password authentication
-  CredentialsProvider({
-    name: "credentials",
-    credentials: {
-      email: { label: "Email", type: "email" },
-      password: { label: "Password", type: "password" },
-    },
-    async authorize(credentials) {
-      if (!credentials?.email || !credentials?.password) {
-        throw new Error("Email and password required");
-      }
+function buildProviders(): NextAuthOptions["providers"] {
+  const env = getEnv(); // ✅ Évalué uniquement quand appelé
 
-      const user = await prisma.user.findUnique({
-        where: { email: credentials.email },
-      });
+  const providers: NextAuthOptions["providers"] = [
+    // Email/Password authentication
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email and password required");
+        }
 
-      if (!user || !user.password) {
-        throw new Error("Invalid credentials");
-      }
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
 
-      const isPasswordValid = await bcrypt.compare(
-        credentials.password,
-        user.password
-      );
+        if (!user || !user.password) {
+          throw new Error("Invalid credentials");
+        }
 
-      if (!isPasswordValid) {
-        throw new Error("Invalid credentials");
-      }
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
 
-      return {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        image: user.image,
-      };
-    },
-  }),
-];
+        if (!isPasswordValid) {
+          throw new Error("Invalid credentials");
+        }
 
-// Add Google OAuth only if credentials are available
-if (features.googleOAuth) {
-  providers.push(
-    GoogleProvider({
-      clientId: env.GOOGLE_CLIENT_ID!,
-      clientSecret: env.GOOGLE_CLIENT_SECRET!,
-    })
-  );
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        };
+      },
+    }),
+  ];
+
+  // Add Google OAuth only if credentials are available
+  if (features.googleOAuth) {
+    providers.push(
+      GoogleProvider({
+        clientId: env.GOOGLE_CLIENT_ID!,
+        clientSecret: env.GOOGLE_CLIENT_SECRET!,
+      })
+    );
+  }
+
+  return providers;
 }
 
 export const authOptions: NextAuthOptions = {
   // Adapter disabled for JWT strategy - accounts/sessions managed via JWT
   // adapter: PrismaAdapter(prisma),
 
-  providers,
+  // ✅ PATTERN: Lazy evaluation via getter
+  get providers() {
+    return buildProviders();
+  },
 
   // Use JWT strategy for sessions
   session: {
@@ -166,6 +177,8 @@ export const authOptions: NextAuthOptions = {
   // Enable debug messages in development
   debug: process.env.NODE_ENV === "development",
 
-  // Secret for JWT encryption
-  secret: env.NEXTAUTH_SECRET,
+  // Secret for JWT encryption - lazy evaluation
+  get secret() {
+    return getEnv().NEXTAUTH_SECRET;
+  },
 };

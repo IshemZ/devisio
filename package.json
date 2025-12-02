@@ -13,7 +13,11 @@
     "test:coverage": "vitest --coverage",
     "test:run": "vitest run",
     "test:hydration": "vitest run tests/lib/date-utils.test.ts tests/components/hydration.test.tsx tests/components/loading-states.test.tsx",
-    "a11y:audit": "echo 'Install pa11y-ci: npm install -D pa11y-ci' && echo 'Run: npm run dev & sleep 5 && npx pa11y-ci'"
+    "a11y:audit": "echo 'Install pa11y-ci: npm install -D pa11y-ci' && echo 'Run: npm run dev & sleep 5 && npx pa11y-ci'",
+    "env:check": "tsx scripts/check-env.ts",
+    "env:template": "tsx scripts/generate-env-template.ts",
+    "clean:cache": "rm -rf .next && echo '✅ Cache Next.js supprimé'",
+    "clean:all": "rm -rf .next node_modules/.cache && echo '✅ Tous les caches supprimés'"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",

@@ -86,8 +86,8 @@ Required `.env.local`:
 ```
 DATABASE_URL=          # Neon pooled connection
 DIRECT_URL=            # Neon direct connection (migrations)
-NEXTAUTH_URL=          # App URL
 NEXTAUTH_SECRET=       # JWT secret (generate with: openssl rand -base64 32)
+# NEXTAUTH_URL=        # Auto-détecté (optionnel, seulement si URL custom)
 GOOGLE_CLIENT_ID=      # OAuth (optional)
 GOOGLE_CLIENT_SECRET=  # OAuth (optional)
 ```
