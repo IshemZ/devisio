@@ -59,22 +59,33 @@
 
 ## 🟡 IMPORTANTES (RECOMMANDÉES)
 
-### ⚠️ 6. Logging en production
+### ✅ 6. Logging en production
 
-**État** : Console.error partout, mais pas de monitoring externe
+**État** : ✅ Sentry configuré et intégré
 
-**Actions** :
+**Implémenté** :
+
+- [x] Package `@sentry/nextjs` installé
+- [x] Configuration dans `instrumentation.ts`, `sentry.server.config.ts`, et `sentry.edge.config.ts`
+- [x] DSN externalisé dans variable d'environnement `SENTRY_DSN`
+- [x] Intégration dans toutes les Server Actions (clients, quotes, services)
+- [x] Capture d'erreurs dans Error Boundaries (error.tsx, global-error.tsx, dashboard/error.tsx)
+- [x] Sample rate adaptatif : 100% en dev, 10% en prod
+- [x] Tags personnalisés (action, businessId, location)
+- [x] Respect RGPD : `sendDefaultPii: false`
+
+**Configuration Vercel** :
+
+Ajouter dans Dashboard → Environment Variables :
 
 ```bash
-npm install @sentry/nextjs
-npx @sentry/wizard@latest -i nextjs
+SENTRY_DSN="https://your-key@org.ingest.sentry.io/project-id"
+SENTRY_ORG="your-sentry-org-slug"
+SENTRY_PROJECT="your-sentry-project-slug"
+SENTRY_AUTH_TOKEN="your-auth-token"
 ```
 
-Ajouter dans `.env.local` :
-
-```
-SENTRY_DSN="https://your-dsn@sentry.io/project-id"
-```
+**Documentation** : Voir `.env.example` pour les variables requises
 
 ---
 
@@ -215,11 +226,34 @@ Ajouter tests pour :
 - Région : EU West (Paris)
 - Copier `DATABASE_URL` et `DIRECT_URL`
 
+**⚠️ IMPORTANT** : Base de données **VIDE** séparée de dev
+
 **Pourquoi séparer ?**
 
 - ✅ Isolation complète dev/prod
 - ✅ Migrations sécurisées
 - ✅ Performances indépendantes
+- ✅ **Aucune donnée de test en production**
+
+#### Comment les Migrations Fonctionnent
+
+Quand Vercel build l'app, le script `prisma migrate deploy` va :
+
+1. ✅ **Créer la structure** (tables, relations, index) - depuis `prisma/migrations/`
+2. ❌ **NE PAS copier de données** - La base restera vide
+3. ✅ Marquer la migration comme appliquée dans `_prisma_migrations`
+
+**Configuration automatique** :
+
+```json
+// package.json
+"scripts": {
+  "build": "prisma generate && prisma migrate deploy && next build",
+  "postinstall": "prisma generate"
+}
+```
+
+Lors du premier déploiement, la base sera **vide et prête** pour les vrais utilisateurs.
 
 #### 1b. Créer des Credentials Google OAuth PRODUCTION
 
@@ -258,27 +292,6 @@ Vercel Dashboard → Settings → Environment Variables :
 | `GOOGLE_CLIENT_ID`     | `[PROD client ID]`                                             | Production |
 | `GOOGLE_CLIENT_SECRET` | `[PROD secret]`                                                | Production |
 | `NODE_ENV`             | `production`                                                   | Production |
-
-#### Option B : Via CLI
-
-```bash
-# Installer Vercel CLI
-npm i -g vercel
-
-# Login
-vercel login
-
-# Lier le projet
-vercel link
-
-# Ajouter les variables
-vercel env add DATABASE_URL production
-vercel env add DIRECT_URL production
-vercel env add NEXTAUTH_URL production
-vercel env add NEXTAUTH_SECRET production
-vercel env add GOOGLE_CLIENT_ID production
-vercel env add GOOGLE_CLIENT_SECRET production
-```
 
 ---
 

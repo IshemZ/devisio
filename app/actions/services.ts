@@ -1,44 +1,53 @@
-'use server'
+"use server";
 
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import prisma from '@/lib/prisma'
-import { createServiceSchema, updateServiceSchema, type CreateServiceInput, type UpdateServiceInput } from '@/lib/validations'
-import { revalidatePath } from 'next/cache'
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import prisma from "@/lib/prisma";
+import {
+  createServiceSchema,
+  updateServiceSchema,
+  type CreateServiceInput,
+  type UpdateServiceInput,
+} from "@/lib/validations";
+import { revalidatePath } from "next/cache";
+import * as Sentry from "@sentry/nextjs";
 
 export async function getServices() {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session?.user?.businessId) {
-    return { error: 'Non autorisé' }
+    return { error: "Non autorisé" };
   }
 
   try {
     const services = await prisma.service.findMany({
       where: { businessId: session.user.businessId },
-      orderBy: { createdAt: 'desc' },
-    })
+      orderBy: { createdAt: "desc" },
+    });
 
-    return { data: services }
+    return { data: services };
   } catch (error) {
-    console.error('Error fetching services:', error)
-    return { error: 'Erreur lors de la récupération des services' }
+    Sentry.captureException(error, {
+      tags: { action: "getServices", businessId: session.user.businessId },
+    });
+    console.error("Error fetching services:", error);
+    return { error: "Erreur lors de la récupération des services" };
   }
 }
 
 export async function createService(input: CreateServiceInput) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session?.user?.businessId) {
-    return { error: 'Non autorisé' }
+    return { error: "Non autorisé" };
   }
 
-  const validation = createServiceSchema.safeParse(input)
+  const validation = createServiceSchema.safeParse(input);
   if (!validation.success) {
     return {
-      error: 'Données invalides',
-      fieldErrors: validation.error.flatten().fieldErrors
-    }
+      error: "Données invalides",
+      fieldErrors: validation.error.flatten().fieldErrors,
+    };
   }
 
   try {
@@ -47,29 +56,33 @@ export async function createService(input: CreateServiceInput) {
         ...validation.data,
         businessId: session.user.businessId,
       },
-    })
+    });
 
-    revalidatePath('/dashboard/services')
-    return { data: service }
+    revalidatePath("/dashboard/services");
+    return { data: service };
   } catch (error) {
-    console.error('Error creating service:', error)
-    return { error: 'Erreur lors de la création du service' }
+    Sentry.captureException(error, {
+      tags: { action: "createService", businessId: session.user.businessId },
+      extra: { input },
+    });
+    console.error("Error creating service:", error);
+    return { error: "Erreur lors de la création du service" };
   }
 }
 
 export async function updateService(id: string, input: UpdateServiceInput) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session?.user?.businessId) {
-    return { error: 'Non autorisé' }
+    return { error: "Non autorisé" };
   }
 
-  const validation = updateServiceSchema.safeParse(input)
+  const validation = updateServiceSchema.safeParse(input);
   if (!validation.success) {
     return {
-      error: 'Données invalides',
-      fieldErrors: validation.error.flatten().fieldErrors
-    }
+      error: "Données invalides",
+      fieldErrors: validation.error.flatten().fieldErrors,
+    };
   }
 
   try {
@@ -79,21 +92,25 @@ export async function updateService(id: string, input: UpdateServiceInput) {
         businessId: session.user.businessId,
       },
       data: validation.data,
-    })
+    });
 
-    revalidatePath('/dashboard/services')
-    return { data: service }
+    revalidatePath("/dashboard/services");
+    return { data: service };
   } catch (error) {
-    console.error('Error updating service:', error)
-    return { error: 'Erreur lors de la mise à jour du service' }
+    Sentry.captureException(error, {
+      tags: { action: "updateService", businessId: session.user.businessId },
+      extra: { serviceId: id, input },
+    });
+    console.error("Error updating service:", error);
+    return { error: "Erreur lors de la mise à jour du service" };
   }
 }
 
 export async function deleteService(id: string) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session?.user?.businessId) {
-    return { error: 'Non autorisé' }
+    return { error: "Non autorisé" };
   }
 
   try {
@@ -102,12 +119,16 @@ export async function deleteService(id: string) {
         id,
         businessId: session.user.businessId,
       },
-    })
+    });
 
-    revalidatePath('/dashboard/services')
-    return { success: true }
+    revalidatePath("/dashboard/services");
+    return { success: true };
   } catch (error) {
-    console.error('Error deleting service:', error)
-    return { error: 'Erreur lors de la suppression du service' }
+    Sentry.captureException(error, {
+      tags: { action: "deleteService", businessId: session.user.businessId },
+      extra: { serviceId: id },
+    });
+    console.error("Error deleting service:", error);
+    return { error: "Erreur lors de la suppression du service" };
   }
 }

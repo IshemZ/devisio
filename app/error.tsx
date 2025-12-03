@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import * as Sentry from "@sentry/nextjs";
 
 /**
  * Global error boundary for root layout errors
@@ -16,7 +17,15 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log error to error reporting service
+    // Log error to Sentry
+    Sentry.captureException(error, {
+      tags: { location: "root-error-boundary" },
+      contexts: {
+        errorBoundary: {
+          digest: error.digest,
+        },
+      },
+    });
     console.error("Global application error:", error);
   }, [error]);
 

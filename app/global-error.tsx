@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import * as Sentry from "@sentry/nextjs";
 
 /**
  * Global error boundary - catches ALL errors including root layout errors
@@ -18,7 +19,16 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log error to monitoring service (Sentry)
+    // Log error to Sentry
+    Sentry.captureException(error, {
+      tags: { location: "global-error-boundary", severity: "critical" },
+      contexts: {
+        errorBoundary: {
+          digest: error.digest,
+          message: error.message,
+        },
+      },
+    });
     console.error("Critical global error:", error);
   }, [error]);
 

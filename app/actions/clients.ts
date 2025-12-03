@@ -1,48 +1,57 @@
-'use server'
+"use server";
 
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import prisma from '@/lib/prisma'
-import { createClientSchema, updateClientSchema, type CreateClientInput, type UpdateClientInput } from '@/lib/validations'
-import { sanitizeObject } from '@/lib/security'
-import { revalidatePath } from 'next/cache'
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import prisma from "@/lib/prisma";
+import {
+  createClientSchema,
+  updateClientSchema,
+  type CreateClientInput,
+  type UpdateClientInput,
+} from "@/lib/validations";
+import { sanitizeObject } from "@/lib/security";
+import { revalidatePath } from "next/cache";
+import * as Sentry from "@sentry/nextjs";
 
 export async function getClients() {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session?.user?.businessId) {
-    return { error: 'Non autorisé' }
+    return { error: "Non autorisé" };
   }
 
   try {
     const clients = await prisma.client.findMany({
       where: { businessId: session.user.businessId },
-      orderBy: { createdAt: 'desc' },
-    })
+      orderBy: { createdAt: "desc" },
+    });
 
-    return { data: clients }
+    return { data: clients };
   } catch (error) {
-    console.error('Error fetching clients:', error)
-    return { error: 'Erreur lors de la récupération des clients' }
+    Sentry.captureException(error, {
+      tags: { action: "getClients", businessId: session.user.businessId },
+    });
+    console.error("Error fetching clients:", error);
+    return { error: "Erreur lors de la récupération des clients" };
   }
 }
 
 export async function createClient(input: CreateClientInput) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session?.user?.businessId) {
-    return { error: 'Non autorisé' }
+    return { error: "Non autorisé" };
   }
 
   // Sanitize input before validation
-  const sanitized = sanitizeObject(input)
+  const sanitized = sanitizeObject(input);
 
-  const validation = createClientSchema.safeParse(sanitized)
+  const validation = createClientSchema.safeParse(sanitized);
   if (!validation.success) {
     return {
-      error: 'Données invalides',
-      fieldErrors: validation.error.flatten().fieldErrors
-    }
+      error: "Données invalides",
+      fieldErrors: validation.error.flatten().fieldErrors,
+    };
   }
 
   try {
@@ -51,32 +60,36 @@ export async function createClient(input: CreateClientInput) {
         ...validation.data,
         businessId: session.user.businessId,
       },
-    })
+    });
 
-    revalidatePath('/dashboard/clients')
-    return { data: client }
+    revalidatePath("/dashboard/clients");
+    return { data: client };
   } catch (error) {
-    console.error('Error creating client:', error)
-    return { error: 'Erreur lors de la création du client' }
+    Sentry.captureException(error, {
+      tags: { action: "createClient", businessId: session.user.businessId },
+      extra: { input: sanitized },
+    });
+    console.error("Error creating client:", error);
+    return { error: "Erreur lors de la création du client" };
   }
 }
 
 export async function updateClient(id: string, input: UpdateClientInput) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session?.user?.businessId) {
-    return { error: 'Non autorisé' }
+    return { error: "Non autorisé" };
   }
 
   // Sanitize input before validation
-  const sanitized = sanitizeObject(input)
+  const sanitized = sanitizeObject(input);
 
-  const validation = updateClientSchema.safeParse(sanitized)
+  const validation = updateClientSchema.safeParse(sanitized);
   if (!validation.success) {
     return {
-      error: 'Données invalides',
-      fieldErrors: validation.error.flatten().fieldErrors
-    }
+      error: "Données invalides",
+      fieldErrors: validation.error.flatten().fieldErrors,
+    };
   }
 
   try {
@@ -86,21 +99,25 @@ export async function updateClient(id: string, input: UpdateClientInput) {
         businessId: session.user.businessId, // Tenant isolation
       },
       data: validation.data,
-    })
+    });
 
-    revalidatePath('/dashboard/clients')
-    return { data: client }
+    revalidatePath("/dashboard/clients");
+    return { data: client };
   } catch (error) {
-    console.error('Error updating client:', error)
-    return { error: 'Erreur lors de la mise à jour du client' }
+    Sentry.captureException(error, {
+      tags: { action: "updateClient", businessId: session.user.businessId },
+      extra: { clientId: id, input: sanitized },
+    });
+    console.error("Error updating client:", error);
+    return { error: "Erreur lors de la mise à jour du client" };
   }
 }
 
 export async function deleteClient(id: string) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session?.user?.businessId) {
-    return { error: 'Non autorisé' }
+    return { error: "Non autorisé" };
   }
 
   try {
@@ -109,12 +126,16 @@ export async function deleteClient(id: string) {
         id,
         businessId: session.user.businessId,
       },
-    })
+    });
 
-    revalidatePath('/dashboard/clients')
-    return { success: true }
+    revalidatePath("/dashboard/clients");
+    return { success: true };
   } catch (error) {
-    console.error('Error deleting client:', error)
-    return { error: 'Erreur lors de la suppression du client' }
+    Sentry.captureException(error, {
+      tags: { action: "deleteClient", businessId: session.user.businessId },
+      extra: { clientId: id },
+    });
+    console.error("Error deleting client:", error);
+    return { error: "Erreur lors de la suppression du client" };
   }
 }
