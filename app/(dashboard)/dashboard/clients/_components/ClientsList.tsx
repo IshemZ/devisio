@@ -5,8 +5,8 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { createClient, deleteClient } from "@/app/actions/clients";
 import type { Client } from "@prisma/client";
-import ConfirmDialog from "./ConfirmDialog";
-import { EmptyState } from "./ui/empty-state";
+import ConfirmDialog from "@/components/shared/ConfirmDialog";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Users } from "lucide-react";
 
 interface ClientsListProps {

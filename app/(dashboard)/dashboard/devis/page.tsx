@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { getQuotes } from "@/app/actions/quotes";
-import QuotesList from "@/components/QuotesList";
+import QuotesList from "./_components/QuotesList";
 
 export const metadata: Metadata = {
   title: "Mes devis | Solkant",

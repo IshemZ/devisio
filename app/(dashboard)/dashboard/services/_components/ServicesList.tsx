@@ -5,8 +5,8 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { createService, deleteService } from "@/app/actions/services";
 import type { Service } from "@prisma/client";
-import ConfirmDialog from "./ConfirmDialog";
-import { EmptyState } from "./ui/empty-state";
+import ConfirmDialog from "@/components/shared/ConfirmDialog";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Briefcase } from "lucide-react";
 
 interface ServicesListProps {

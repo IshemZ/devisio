@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { getQuote } from "@/app/actions/quotes";
 import { redirect } from "next/navigation";
-import QuoteView from "@/components/QuoteView";
+import QuoteView from "../_components/QuoteView";
 
 export const metadata: Metadata = {
   title: "Devis | Solkant",

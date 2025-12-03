@@ -74,7 +74,7 @@ export default function GlobalError({
                   Retour à l&apos;accueil
                 </Link>
                 <a
-                  href="mailto:support@solkant.fr"
+                  href="mailto:alaneicos@gmail.com"
                   className="text-sm text-foreground underline hover:text-foreground/80"
                 >
                   Contacter le support

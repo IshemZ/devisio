@@ -52,7 +52,7 @@ export default function Error({
         <p className="mt-4 text-sm text-muted-foreground">
           Si le problème persiste,{" "}
           <a
-            href="mailto:support@solkant.fr"
+            href="mailto:alaneicos@gmail.com"
             className="underline hover:text-foreground"
           >
             contactez le support

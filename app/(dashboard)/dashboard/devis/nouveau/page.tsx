@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { getClients } from "@/app/actions/clients";
 import { getServices } from "@/app/actions/services";
-import { QuoteFormNew } from "@/components/forms";
+import QuoteFormNew from "../_components/QuoteFormNew";
 import { EmptyState } from "@/components/ui/empty-state";
 import { redirect } from "next/navigation";
 import { Users, Briefcase } from "lucide-react";

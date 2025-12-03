@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { getClients } from "@/app/actions/clients";
-import ClientsList from "@/components/ClientsList";
+import ClientsList from "./_components/ClientsList";
 
 export const metadata: Metadata = {
   title: "Clients | Solkant",

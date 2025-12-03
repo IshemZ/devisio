@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { ClientForm } from "@/components/forms";
+import ClientForm from "../../_components/ClientForm";
 import prisma from "@/lib/prisma";
 
 export const metadata: Metadata = {

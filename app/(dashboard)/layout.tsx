@@ -1,8 +1,8 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
-import DashboardNav from "@/components/DashboardNav";
-import { SkipLink } from "@/components/SkipLink";
+import DashboardNav from "@/components/layout/DashboardNav";
+import { SkipLink } from "@/components/shared/SkipLink";
 
 export default async function DashboardLayout({
   children,

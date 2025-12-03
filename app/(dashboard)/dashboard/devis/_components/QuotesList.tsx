@@ -5,8 +5,8 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { deleteQuote } from "@/app/actions/quotes";
 import type { Quote, Client, QuoteItem, Service } from "@prisma/client";
-import ConfirmDialog from "./ConfirmDialog";
-import { EmptyState } from "./ui/empty-state";
+import ConfirmDialog from "@/components/shared/ConfirmDialog";
+import { EmptyState } from "@/components/ui/empty-state";
 import { FileText } from "lucide-react";
 import { formatDate } from "@/lib/date-utils";
 

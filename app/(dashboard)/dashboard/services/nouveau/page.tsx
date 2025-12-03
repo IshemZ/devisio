@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { ServiceForm } from "@/components/forms";
+import ServiceForm from "../_components/ServiceForm";
 
 export const metadata: Metadata = {
   title: "Nouveau service - Solkant",

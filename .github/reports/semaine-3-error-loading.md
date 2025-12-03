@@ -102,10 +102,10 @@ export default function Error({
         <p className="text-sm text-foreground/50">
           Si le problème persiste, contactez{" "}
           <a
-            href="mailto:support@solkant.fr"
+            href="mailto:alaneicos@gmail.com"
             className="text-foreground underline"
           >
-            support@solkant.fr
+            alaneicos@gmail.com
           </a>
         </p>
       </div>

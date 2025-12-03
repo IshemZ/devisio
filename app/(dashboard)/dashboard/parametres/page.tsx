@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { getBusinessInfo } from "@/app/actions/business";
-import BusinessSettingsForm from "@/components/BusinessSettingsForm";
+import BusinessSettingsForm from "./_components/BusinessSettingsForm";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {

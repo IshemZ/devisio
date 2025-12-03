@@ -153,7 +153,7 @@ export default function GlobalError({
                   Retour à l&apos;accueil
                 </a>
                 <a
-                  href="mailto:support@solkant.fr"
+                  href="mailto:alaneicos@gmail.com"
                   style={{
                     fontSize: "0.875rem",
                     textDecoration: "underline",
