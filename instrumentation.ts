@@ -11,22 +11,21 @@
 import * as Sentry from "@sentry/nextjs";
 
 export async function register() {
-  // Supprimer le warning DEP0169 (url.parse) des dépendances
-  // Ce warning provient de Sentry/Next.js et sera corrigé dans leurs mises à jour
-  if (typeof process !== "undefined" && process.emitWarning) {
-    const originalEmitWarning = process.emitWarning;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    process.emitWarning = function (warning, ...args: any[]) {
-      // Filtrer uniquement DEP0169 (url.parse deprecation)
-      if (typeof warning === "string" && warning.includes("DEP0169")) {
-        return; // Ignorer ce warning spécifique
-      }
-      return originalEmitWarning.call(this, warning, ...args);
-    };
-  }
-
   // Node.js runtime (Server Components, API Routes, Server Actions)
   if (process.env.NEXT_RUNTIME === "nodejs") {
+    // Supprimer le warning DEP0169 (url.parse) des dépendances
+    // Ce warning provient de Sentry/Next.js et sera corrigé dans leurs mises à jour
+    if (typeof process !== "undefined" && process.emitWarning) {
+      const originalEmitWarning = process.emitWarning;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      process.emitWarning = function (warning, ...args: any[]) {
+        // Filtrer uniquement DEP0169 (url.parse deprecation)
+        if (typeof warning === "string" && warning.includes("DEP0169")) {
+          return; // Ignorer ce warning spécifique
+        }
+        return originalEmitWarning.call(this, warning, ...args);
+      };
+    }
     // Import Sentry config
     await import("./sentry.server.config");
 
