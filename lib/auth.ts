@@ -102,14 +102,22 @@ export const authOptions: NextAuthOptions = {
       // For Google OAuth: create User and Business if they don't exist
       if (account?.provider === "google" && user.email) {
         try {
+          console.log(
+            "[Google OAuth] Début du callback signIn pour:",
+            user.email
+          );
+
           // Check if user exists
           let dbUser = await prisma.user.findUnique({
             where: { email: user.email },
             include: { business: true },
           });
 
+          console.log("[Google OAuth] Utilisateur trouvé:", !!dbUser);
+
           // Create user if doesn't exist
           if (!dbUser) {
+            console.log("[Google OAuth] Création du nouvel utilisateur");
             dbUser = await prisma.user.create({
               data: {
                 email: user.email,
@@ -119,10 +127,15 @@ export const authOptions: NextAuthOptions = {
               },
               include: { business: true },
             });
+            console.log("[Google OAuth] Utilisateur créé avec ID:", dbUser.id);
           }
 
           // Create Business if doesn't exist
           if (!dbUser.business) {
+            console.log(
+              "[Google OAuth] Création du Business pour l'utilisateur:",
+              dbUser.id
+            );
             await prisma.business.create({
               data: {
                 name: `Institut de ${user.name || "beauté"}`,
@@ -130,12 +143,26 @@ export const authOptions: NextAuthOptions = {
                 email: user.email || undefined,
               },
             });
+            console.log("[Google OAuth] Business créé avec succès");
+          } else {
+            console.log(
+              "[Google OAuth] Business existe déjà:",
+              dbUser.business.id
+            );
           }
 
           // Update user.id with database ID for JWT token
           user.id = dbUser.id;
+          console.log("[Google OAuth] Callback signIn terminé avec succès");
         } catch (error) {
-          console.error("Error in signIn callback:", error);
+          console.error(
+            "[Google OAuth] ERREUR dans le callback signIn:",
+            error
+          );
+          console.error(
+            "[Google OAuth] Stack trace:",
+            error instanceof Error ? error.stack : "N/A"
+          );
           return false;
         }
       }
@@ -144,25 +171,44 @@ export const authOptions: NextAuthOptions = {
     },
 
     async jwt({ token, user, account }) {
-      // Initial sign in
-      if (user) {
-        token.id = user.id;
+      try {
+        // Initial sign in
+        if (user) {
+          console.log("[JWT Callback] Processing token for user:", user.id);
+          token.id = user.id;
 
-        // Fetch businessId for the user
-        const dbUser = await prisma.user.findUnique({
-          where: { id: user.id },
-          select: { business: { select: { id: true } } },
-        });
+          // Fetch businessId for the user
+          const dbUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { business: { select: { id: true } } },
+          });
 
-        token.businessId = dbUser?.business?.id || null;
+          console.log("[JWT Callback] Business trouvé:", !!dbUser?.business);
+          token.businessId = dbUser?.business?.id || null;
+
+          if (!token.businessId) {
+            console.warn(
+              "[JWT Callback] ⚠️ Aucun businessId trouvé pour user:",
+              user.id
+            );
+          }
+        }
+
+        // OAuth sign in
+        if (account?.provider === "google") {
+          token.provider = "google";
+          console.log("[JWT Callback] Provider Google ajouté au token");
+        }
+
+        return token;
+      } catch (error) {
+        console.error("[JWT Callback] ERREUR:", error);
+        console.error(
+          "[JWT Callback] Stack trace:",
+          error instanceof Error ? error.stack : "N/A"
+        );
+        throw error; // Re-throw pour que NextAuth gère l'erreur proprement
       }
-
-      // OAuth sign in
-      if (account?.provider === "google") {
-        token.provider = "google";
-      }
-
-      return token;
     },
 
     async session({ session, token }) {

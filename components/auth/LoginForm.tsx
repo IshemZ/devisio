@@ -1,46 +1,64 @@
-'use client'
+"use client";
 
-import { signIn } from 'next-auth/react'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { signIn } from "next-auth/react";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginForm() {
-  const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Afficher les erreurs OAuth depuis l'URL
+  useEffect(() => {
+    const urlError = searchParams.get("error");
+    if (urlError) {
+      console.error("[LoginForm] Erreur OAuth détectée:", urlError);
+      setError(`Erreur de connexion: ${urlError}`);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setIsLoading(true)
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
 
     try {
-      const result = await signIn('credentials', {
+      const result = await signIn("credentials", {
         email,
         password,
         redirect: false,
-      })
+      });
 
       if (result?.error) {
-        setError('Email ou mot de passe invalide')
-        setIsLoading(false)
-        return
+        setError("Email ou mot de passe invalide");
+        setIsLoading(false);
+        return;
       }
 
-      router.push('/dashboard')
-      router.refresh()
+      router.push("/dashboard");
+      router.refresh();
     } catch {
-      setError('Une erreur est survenue. Veuillez réessayer.')
-      setIsLoading(false)
+      setError("Une erreur est survenue. Veuillez réessayer.");
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleGoogleSignIn = async () => {
-    setIsLoading(true)
-    await signIn('google', { callbackUrl: '/dashboard' })
-  }
+    try {
+      setIsLoading(true);
+      setError("");
+      console.log("[LoginForm] Démarrage de la connexion Google OAuth...");
+      await signIn("google", { callbackUrl: "/dashboard" });
+    } catch (err) {
+      console.error("[LoginForm] Erreur lors de la connexion Google:", err);
+      setError("Erreur lors de la connexion avec Google");
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -94,7 +112,7 @@ export default function LoginForm() {
           disabled={isLoading}
           className="w-full rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background hover:bg-foreground/90 focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? 'Connexion...' : 'Se connecter'}
+          {isLoading ? "Connexion..." : "Se connecter"}
         </button>
       </form>
 
@@ -138,5 +156,5 @@ export default function LoginForm() {
         </span>
       </button>
     </div>
-  )
+  );
 }
