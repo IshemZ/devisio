@@ -16,27 +16,33 @@ export async function register() {
     // Import Sentry config
     await import("./sentry.server.config");
 
-    // Validate environment variables
-    const { getEnv, logEnvSummary } = await import("./lib/env");
+    // SKIP validation pendant le build (Vercel, GitHub Actions, etc.)
+    // La validation se fera à la première requête runtime
+    const isBuilding = process.env.NEXT_PHASE === "phase-production-build";
 
-    try {
-      // Valider les variables d'environnement au démarrage
-      getEnv();
+    if (!isBuilding) {
+      // Validate environment variables au runtime uniquement
+      const { getEnv, logEnvSummary } = await import("./lib/env");
 
-      // Log summary en développement
-      if (process.env.NODE_ENV === "development") {
-        logEnvSummary();
-      }
-    } catch (error) {
-      console.error("❌ Échec de validation des variables d'environnement:");
-      console.error(error);
+      try {
+        // Valider les variables d'environnement au démarrage
+        getEnv();
 
-      // Log to Sentry in production
-      if (process.env.NODE_ENV === "production") {
-        Sentry.captureException(error, {
-          tags: { context: "env-validation" },
-        });
-        throw error;
+        // Log summary en développement
+        if (process.env.NODE_ENV === "development") {
+          logEnvSummary();
+        }
+      } catch (error) {
+        console.error("❌ Échec de validation des variables d'environnement:");
+        console.error(error);
+
+        // Log to Sentry in production
+        if (process.env.NODE_ENV === "production") {
+          Sentry.captureException(error, {
+            tags: { context: "env-validation" },
+          });
+          throw error;
+        }
       }
     }
   }
