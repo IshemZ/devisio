@@ -65,6 +65,18 @@ const envSchema = z.object({
     .optional()
     .describe("Sentry DSN pour error monitoring (optionnel)"),
 
+  // ===== ANALYTICS (OPTIONAL) =====
+  NEXT_PUBLIC_GA_MEASUREMENT_ID: z
+    .string()
+    .regex(
+      /^G-[A-Z0-9]+$/,
+      "Format Google Analytics invalide (ex: G-XXXXXXXXXX)"
+    )
+    .optional()
+    .describe(
+      "Google Analytics Measurement ID (optionnel, format: G-XXXXXXXXXX)"
+    ),
+
   // ===== RATE LIMITING (OPTIONAL) =====
   UPSTASH_REDIS_URL: z
     .string()
@@ -270,6 +282,12 @@ export const features = {
     return !!env.SENTRY_DSN;
   },
 
+  /** Google Analytics activé */
+  get googleAnalytics(): boolean {
+    // Cette variable est publique, accessible côté client
+    return !!process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+  },
+
   /** Rate limiting activé (Upstash Redis) */
   get rateLimiting(): boolean {
     if (typeof window !== "undefined") return false; // Côté client
@@ -313,6 +331,7 @@ export function logEnvSummary(): void {
   console.log(
     `  Sentry Monitoring: ${features.sentryMonitoring ? "✅" : "❌"}`
   );
+  console.log(`  Google Analytics: ${features.googleAnalytics ? "✅" : "❌"}`);
   console.log(`  Rate Limiting: ${features.rateLimiting ? "✅" : "❌"}`);
   console.log("");
 }
@@ -365,6 +384,10 @@ NEXTAUTH_SECRET="" # Générer avec: openssl rand -base64 32
 # ===== MONITORING (OPTIONAL) =====
 # Sentry error monitoring
 # SENTRY_DSN=""
+
+# ===== ANALYTICS (OPTIONAL) =====
+# Google Analytics (obtenir sur https://analytics.google.com)
+# NEXT_PUBLIC_GA_MEASUREMENT_ID="G-XXXXXXXXXX"
 
 # ===== RATE LIMITING (OPTIONAL) =====
 # Upstash Redis
