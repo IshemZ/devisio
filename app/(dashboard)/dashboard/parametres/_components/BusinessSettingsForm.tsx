@@ -14,11 +14,13 @@ export default function BusinessSettingsForm({
 }: BusinessSettingsFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+    setFieldErrors({});
 
     const formData = new FormData(e.currentTarget);
 
@@ -36,6 +38,9 @@ export default function BusinessSettingsForm({
 
     if (result.error) {
       setError(result.error);
+      if ("fieldErrors" in result) {
+        setFieldErrors(result.fieldErrors as Record<string, string[]>);
+      }
       toast.error("Erreur lors de la mise à jour");
     } else {
       toast.success("Informations mises à jour avec succès");
@@ -86,6 +91,11 @@ export default function BusinessSettingsForm({
           defaultValue={business.email || ""}
           className="mt-1 block w-full rounded-md border border-foreground/20 bg-background px-3 py-2 text-foreground placeholder-foreground/40 focus:border-foreground/40 focus:outline-none focus:ring-1 focus:ring-foreground/40"
         />
+        {fieldErrors.email && (
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+            {fieldErrors.email[0]}
+          </p>
+        )}
       </div>
 
       <div>
@@ -102,6 +112,11 @@ export default function BusinessSettingsForm({
           defaultValue={business.phone || ""}
           className="mt-1 block w-full rounded-md border border-foreground/20 bg-background px-3 py-2 text-foreground placeholder-foreground/40 focus:border-foreground/40 focus:outline-none focus:ring-1 focus:ring-foreground/40"
         />
+        {fieldErrors.phone && (
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+            {fieldErrors.phone[0]}
+          </p>
+        )}
       </div>
 
       <div>
@@ -135,6 +150,11 @@ export default function BusinessSettingsForm({
           placeholder="123 456 789 00010"
           className="mt-1 block w-full rounded-md border border-foreground/20 bg-background px-3 py-2 text-foreground placeholder-foreground/40 focus:border-foreground/40 focus:outline-none focus:ring-1 focus:ring-foreground/40"
         />
+        {fieldErrors.siret && (
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+            {fieldErrors.siret[0]}
+          </p>
+        )}
       </div>
 
       <div className="flex justify-end gap-4">

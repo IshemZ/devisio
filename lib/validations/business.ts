@@ -67,43 +67,53 @@ export const updateBusinessSchema = z.object({
     .trim()
     .optional(),
   address: z
-    .string()
-    .max(255, "L'adresse ne peut pas dépasser 255 caractères")
-    .trim()
-    .optional()
-    .nullable()
-    .transform((val) => val || null),
+    .union([
+      z
+        .string()
+        .max(255, "L'adresse ne peut pas dépasser 255 caractères")
+        .trim(),
+      z.literal(""),
+      z.null(),
+    ])
+    .transform((val) => (val === "" || !val ? null : val))
+    .optional(),
   phone: z
-    .string()
-    .regex(
-      /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/,
-      "Numéro de téléphone invalide (format français attendu)"
-    )
-    .trim()
-    .optional()
-    .nullable()
-    .transform((val) => val || null),
+    .union([
+      z
+        .string()
+        .regex(
+          /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/,
+          "Numéro de téléphone invalide (format français attendu)"
+        )
+        .trim(),
+      z.literal(""),
+      z.null(),
+    ])
+    .transform((val) => (val === "" || !val ? null : val))
+    .optional(),
   email: z
-    .string()
-    .email("Format d'email invalide")
-    .toLowerCase()
-    .trim()
-    .optional()
-    .nullable()
-    .transform((val) => val || null),
+    .union([
+      z.string().email("Format d'email invalide").toLowerCase().trim(),
+      z.literal(""),
+      z.null(),
+    ])
+    .transform((val) => (val === "" || !val ? null : val))
+    .optional(),
   logo: z
-    .string()
-    .url("URL du logo invalide")
-    .optional()
-    .nullable()
-    .transform((val) => val || null),
+    .union([z.string().url("URL du logo invalide"), z.literal(""), z.null()])
+    .transform((val) => (val === "" || !val ? null : val))
+    .optional(),
   siret: z
-    .string()
-    .regex(/^\d{14}$/, "Le SIRET doit contenir exactement 14 chiffres")
-    .trim()
-    .optional()
-    .nullable()
-    .transform((val) => val || null),
+    .union([
+      z
+        .string()
+        .regex(/^\d{14}$/, "Le SIRET doit contenir exactement 14 chiffres")
+        .trim(),
+      z.literal(""),
+      z.null(),
+    ])
+    .transform((val) => (val === "" || !val ? null : val))
+    .optional(),
   primaryColor: z
     .string()
     .regex(
