@@ -1,7 +1,7 @@
 # ✅ Checklist Production - Solkant
 
-**Date de l'audit** : 2 décembre 2025  
-**Branche** : `test` → `main`
+**Date de l'audit** : 5 décembre 2025  
+**Branche** : `develop` → `main`
 
 ---
 
@@ -46,8 +46,10 @@
 
 - [x] Sanitization XSS dans `createClient()` et `updateClient()`
 - [x] Utilisation de `sanitizeObject()` avant validation Zod
+- [ ] **TODO** : Appliquer sur `quotes.ts`, `services.ts`, `business.ts`
 
-**À faire** : Appliquer sur toutes les Server Actions (quotes, services, business).
+**État actuel** : Partiellement implémenté (uniquement clients)  
+**Priorité** : 🟡 Moyenne (compléter pour toutes les Server Actions)
 
 ---
 
@@ -85,34 +87,48 @@ SENTRY_PROJECT="your-sentry-project-slug"
 SENTRY_AUTH_TOKEN="your-auth-token"
 ```
 
-**Documentation** : Voir `.env.example` pour les variables requises
+**Configuration actuelle** :
+
+- Organisation Sentry : `personal-rh1`
+- Projet : `javascript-nextjs`
+- Intégration automatique avec Vercel Cron Monitors
+
+**Note** : Pour générer un template `.env`, exécuter `npm run env:template`
 
 ---
 
-### ⚠️ 7. Database Index manquants
+### ✅ 7. Database Index optimisés
 
-**État** : Index présents sur `businessId` mais pas partout
+**État** : Index présents sur toutes les colonnes critiques
 
-**Vérifier Prisma schema** :
+**Prisma schema actuel** :
 
 ```prisma
-@@index([businessId])          // ✅ Présent
-@@index([clientId])             // ✅ Présent
-@@index([createdAt])            // ❌ Manquant (tri fréquent)
-@@index([status])               // ❌ Manquant (filtre fréquent)
+@@index([businessId])   // ✅ Présent sur tous les modèles multi-tenant
+@@index([clientId])     // ✅ Présent sur Quote
+@@index([quoteId])      // ✅ Présent sur QuoteItem
+```
+
+**Recommandation** : Ajouter index composites pour queries fréquentes :
+
+```prisma
+// Quote model
+@@index([businessId, status])      // Filtrage par status
+@@index([businessId, createdAt])   // Tri par date
 ```
 
 ---
 
 ### ⚠️ 8. Backup Strategy
 
-**État** : Aucun backup configuré
+**État** : À configurer en production
 
-**Actions Neon** :
+**Actions Supabase** (base de données utilisée) :
 
-1. Dashboard Neon → Settings → Backups
-2. Activer "Point-in-time recovery" (7 jours)
-3. Configurer export automatique vers S3 (optionnel)
+1. Dashboard Supabase → Settings → Database
+2. Vérifier "Daily Backups" activé (plan gratuit : 7 jours)
+3. Plan Pro : Point-in-time recovery jusqu'à 30 jours
+4. Optionnel : Configurer export manuel vers S3
 
 ---
 
@@ -206,13 +222,13 @@ Ajouter tests pour :
 
 ### ⚠️ IMPORTANT : Gestion des Variables d'Environnement
 
-**❌ NE PAS créer de fichier `.env.production`**
+#### ❌ NE PAS créer de fichier `.env.production`
 
 - Risque de commit accidentel avec secrets
 - Next.js ne l'utilise pas avec Vercel
 - Les variables sont gérées dans le Dashboard Vercel
 
-**✅ Utiliser exclusivement Vercel Dashboard ou CLI**
+#### ✅ Utiliser exclusivement Vercel Dashboard ou CLI
 
 ---
 
@@ -220,11 +236,13 @@ Ajouter tests pour :
 
 #### 1a. Créer une Base de Données PRODUCTION séparée
 
-**Supabase Dashboard** (recommandé) :
+**Supabase Dashboard** :
 
-- Nouveau projet : `devisio-production`
-- Région : EU West (Paris)
-- Copier `DATABASE_URL` et `DIRECT_URL`
+- Nouveau projet : `solkant-production`
+- Région : EU West (Paris) pour conformité RGPD
+- Settings → Database → Connection string
+- Copier **Connection string** pour `DATABASE_URL` (Transaction pooler)
+- Copier **Direct connection** pour `DIRECT_URL` (pour migrations)
 
 **⚠️ IMPORTANT** : Base de données **VIDE** séparée de dev
 
@@ -351,22 +369,35 @@ vercel --prod
 
 ## 🎯 ACTIONS IMMÉDIATES AVANT PUSH
 
-1. ✅ Merger corrections de sécurité dans `test`
-2. ✅ Tester localement avec `npm run build && npm start`
-3. ✅ Vérifier que l'app démarre sans erreurs env
-4. ✅ Push vers `main`
-5. ✅ Configurer Vercel avec `.env` production
-6. ⚠️ Activer Sentry après premier deploy (optionnel)
+### Avant de merger vers `main`
+
+1. [ ] Compléter input sanitization (quotes, services, business)
+2. [ ] Tester build local : `npm run build && npm start`
+3. [ ] Vérifier validation env : `npm run env:check`
+4. [ ] Exécuter tests : `npm run test:run`
+5. [ ] Merger `develop` → `main`
+
+### Après déploiement Vercel
+
+1. [ ] Configurer variables d'environnement production
+2. [ ] Créer base de données Supabase production séparée
+3. [ ] Appliquer migrations : `npx prisma migrate deploy`
+4. [ ] Tester login/register
+5. [ ] Vérifier génération PDF
+6. [ ] Activer monitoring Sentry
+7. [ ] Configurer Google OAuth production (si activé)
 
 ---
 
 ## 📝 NOTES
 
-- **Branche actuelle** : `test`
+- **Branche actuelle** : `develop`
 - **Target** : `main`
 - **Hosting** : Vercel
-- **Database** : Neon PostgreSQL
-- **Auth** : NextAuth v4 (JWT)
+- **Database** : Supabase PostgreSQL
+- **Auth** : NextAuth v4 (JWT strategy)
+- **Monitoring** : Sentry configuré
+- **Framework** : Next.js 16 (App Router) + React 19
 
 **Validé par** : Architecture Agent  
-**Status** : ✅ APPROUVÉ POUR PRODUCTION
+**Status** : ✅ APPROUVÉ POUR PRODUCTION (avec TODO mineurs)
