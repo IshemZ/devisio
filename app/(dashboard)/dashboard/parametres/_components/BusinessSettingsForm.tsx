@@ -21,12 +21,15 @@ export default function BusinessSettingsForm({
     setError(null);
 
     const formData = new FormData(e.currentTarget);
+
+    // Convertir les chaînes vides en null pour les champs optionnels
     const data = {
       name: formData.get("name") as string,
-      address: formData.get("address") as string,
-      phone: formData.get("phone") as string,
-      email: formData.get("email") as string,
-      siret: formData.get("siret") as string,
+      address: (formData.get("address") as string) || null,
+      phone: (formData.get("phone") as string) || null,
+      email: (formData.get("email") as string) || null,
+      siret: (formData.get("siret") as string) || null,
+      logo: null, // Pas encore implémenté dans le formulaire
     };
 
     const result = await updateBusiness(data);

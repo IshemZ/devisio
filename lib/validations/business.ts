@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from "zod";
 
 /**
  * Schéma de validation pour la création d'un Business
@@ -6,13 +6,13 @@ import { z } from 'zod'
 export const createBusinessSchema = z.object({
   name: z
     .string()
-    .min(1, 'Le nom de l\'institut est requis')
-    .min(2, 'Le nom doit contenir au moins 2 caractères')
-    .max(100, 'Le nom ne peut pas dépasser 100 caractères')
+    .min(1, "Le nom de l'institut est requis")
+    .min(2, "Le nom doit contenir au moins 2 caractères")
+    .max(100, "Le nom ne peut pas dépasser 100 caractères")
     .trim(),
   address: z
     .string()
-    .max(255, 'L\'adresse ne peut pas dépasser 255 caractères')
+    .max(255, "L'adresse ne peut pas dépasser 255 caractères")
     .trim()
     .optional()
     .nullable(),
@@ -20,38 +20,40 @@ export const createBusinessSchema = z.object({
     .string()
     .regex(
       /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/,
-      'Numéro de téléphone invalide (format français attendu)'
+      "Numéro de téléphone invalide (format français attendu)"
     )
     .trim()
     .optional()
     .nullable(),
   email: z
     .string()
-    .email('Format d\'email invalide')
+    .email("Format d'email invalide")
     .toLowerCase()
     .trim()
     .optional()
     .nullable(),
-  logo: z
-    .string()
-    .url('URL du logo invalide')
-    .optional()
-    .nullable(),
+  logo: z.string().url("URL du logo invalide").optional().nullable(),
   siret: z
     .string()
-    .regex(/^\d{14}$/, 'Le SIRET doit contenir exactement 14 chiffres')
+    .regex(/^\d{14}$/, "Le SIRET doit contenir exactement 14 chiffres")
     .trim()
     .optional()
     .nullable(),
   primaryColor: z
     .string()
-    .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Couleur primaire invalide (format hexadécimal attendu)')
-    .default('#D4B5A0'),
+    .regex(
+      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
+      "Couleur primaire invalide (format hexadécimal attendu)"
+    )
+    .default("#D4B5A0"),
   secondaryColor: z
     .string()
-    .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Couleur secondaire invalide (format hexadécimal attendu)')
-    .default('#8B7355'),
-})
+    .regex(
+      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
+      "Couleur secondaire invalide (format hexadécimal attendu)"
+    )
+    .default("#8B7355"),
+});
 
 /**
  * Schéma de validation pour la mise à jour d'un Business
@@ -60,59 +62,70 @@ export const createBusinessSchema = z.object({
 export const updateBusinessSchema = z.object({
   name: z
     .string()
-    .min(2, 'Le nom doit contenir au moins 2 caractères')
-    .max(100, 'Le nom ne peut pas dépasser 100 caractères')
+    .min(2, "Le nom doit contenir au moins 2 caractères")
+    .max(100, "Le nom ne peut pas dépasser 100 caractères")
     .trim()
     .optional(),
   address: z
     .string()
-    .max(255, 'L\'adresse ne peut pas dépasser 255 caractères')
+    .max(255, "L'adresse ne peut pas dépasser 255 caractères")
     .trim()
     .optional()
-    .nullable(),
+    .nullable()
+    .transform((val) => val || null),
   phone: z
     .string()
     .regex(
       /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/,
-      'Numéro de téléphone invalide (format français attendu)'
+      "Numéro de téléphone invalide (format français attendu)"
     )
     .trim()
     .optional()
-    .nullable(),
+    .nullable()
+    .transform((val) => val || null),
   email: z
     .string()
-    .email('Format d\'email invalide')
+    .email("Format d'email invalide")
     .toLowerCase()
     .trim()
     .optional()
-    .nullable(),
+    .nullable()
+    .transform((val) => val || null),
   logo: z
     .string()
-    .url('URL du logo invalide')
+    .url("URL du logo invalide")
     .optional()
-    .nullable(),
+    .nullable()
+    .transform((val) => val || null),
   siret: z
     .string()
-    .regex(/^\d{14}$/, 'Le SIRET doit contenir exactement 14 chiffres')
+    .regex(/^\d{14}$/, "Le SIRET doit contenir exactement 14 chiffres")
     .trim()
     .optional()
-    .nullable(),
+    .nullable()
+    .transform((val) => val || null),
   primaryColor: z
     .string()
-    .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Couleur primaire invalide (format hexadécimal attendu)')
+    .regex(
+      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
+      "Couleur primaire invalide (format hexadécimal attendu)"
+    )
     .optional(),
   secondaryColor: z
     .string()
-    .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Couleur secondaire invalide (format hexadécimal attendu)')
+    .regex(
+      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
+      "Couleur secondaire invalide (format hexadécimal attendu)"
+    )
     .optional(),
-})
+});
 
 /**
  * Type inféré pour la création d'un Business
  */
-export type CreateBusinessInput = z.infer<typeof createBusinessSchema>
+export type CreateBusinessInput = z.infer<typeof createBusinessSchema>;
 
 /**
  * Type inféré pour la mise à jour d'un Business
  */
-export type UpdateBusinessInput = z.infer<typeof updateBusinessSchema>
+export type UpdateBusinessInput = z.infer<typeof updateBusinessSchema>;
